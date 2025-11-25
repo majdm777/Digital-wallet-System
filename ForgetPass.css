@@ -1,0 +1,181 @@
+.wrapper{
+    background-image: url(IMAGES/SIGN_IN_WALLPAPER.jpg);
+    display: flex;
+    justify-content: center;  
+    align-items: center;      
+    height: 100vh; 
+    overflow-y: scroll;
+    background-repeat: no-repeat;
+    background-position: center;
+    object-fit: cover;
+    background-size: cover;
+    margin: 0%;
+    padding: 0%;
+    position: relative;
+    width: 100%;
+}
+.SIGN_IN_FORM{
+    
+    
+    padding: 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+.SIGN_IN_BOX{
+    background-color: whitesmoke;
+    width: 35%;
+    height: 60%;
+    padding:1%;
+    margin: 0px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow-y: auto;
+    
+
+}
+.input-box{
+   margin: 4%;
+   width: 100%;
+   font-size: 100%;
+   padding: 5%;
+   box-sizing: border-box;
+   border: 2px solid rgba(194,181,173,255);
+
+}
+.input-box:focus{
+    font-style: italic;    
+}
+
+
+.OTHER_OPTIONS{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1%;
+    
+    
+}
+.SIGN_IN_BUTTON{
+    width:30% ;
+    border:2px solid rgba(194,181,173,255);
+    background: white;
+    height:3vw;
+    color:grey;
+    font-size: 100%;
+    margin-left: 1%;
+    margin-right:1% ;
+    
+    
+    
+}
+.message{
+    width: 80%;
+    font-size: 100%;
+}
+.timer{
+    width: 10%;
+    font-size: 100%;
+
+}
+
+
+
+body{
+    margin: 0px;
+    padding: 0px;
+
+}
+
+
+@media (min-width:320px) and (max-width:700px){
+    .wrapper{
+        object-fit:scale-down;
+    }
+    .SING_IN_BOX{
+        width: 50%;
+        height: 40%;
+    }
+    .input-box{
+        width: 80%;
+        font-size: 50%;
+    }
+    .SIGN_IN_BUTTON{
+        height: 5vw;
+        font-size: 35%;
+    }
+    
+    .LOGIN{
+        font-size: 50%;
+    }
+   .message{
+        width: 80%;
+        font-size: 50%;
+    }
+    .timer{
+        width: 10%;
+        font-size: 50%;
+
+    }
+    
+    
+} 
+@media(min-width:2000px) {
+    .input-box{
+        width: 80%;
+        font-size: 200%;
+    }
+    .SIGN_IN_BUTTON{
+        height: 3vw;
+        font-size: 200%;
+    }
+    .mar1{
+        font-size: 200%;
+    }
+    .LOGIN{
+        font-size: 200%;
+    }
+    .message{
+        width: 80%;
+        font-size: 200%;
+    }
+    .timer{
+        width: 10%;
+        font-size: 200%;
+
+    }   
+    
+    
+}
+@media (min-width:701px) and (max-width:1000px){
+
+
+    .input-box{
+        width: 80%;
+        font-size: 80%;
+    }
+    .SIGN_IN_BUTTON{
+        height: 3vw;
+        font-size: 80%;
+    }
+    .mar1{
+        font-size: 80%;
+    }
+    .LOGIN{
+        font-size: 80%;
+    }
+    .message{
+        width: 80%;
+        font-size: 80%;
+    }
+    .timer{
+        width: 10%;
+        font-size: 80%;
+
+    }  
+    
+}

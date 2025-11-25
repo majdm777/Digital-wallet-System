@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="SIGNUP_stylesheet.CSS">
+    <title>SIGN-UP</title>
+</head>
+<body style="margin: 0%;">
+    <div class="wrapper">
+        
+    <div id="page1" class="SIGN_IN_BOX">
+        <form class="SIGN_IN_FORM">
+            <h3 class="LOGIN">SIGN UP</h3>
+            <div class="row_inputs">
+                <div class="input"><div class="About_Input">First-Name</div>  <input  id="First-Name" type="text" class="info_inputs" required maxlength="10" placeholder="majd"></div>
+                <div class="input"><div class="About_Input">Last-Name</div> <input  id="Last-Name" type="text" class="info_inputs" required maxlength="15" placeholder="maatouk"></div>
+            </div>
+
+            <div class="row_inputs">
+                <div class="input"><div class="About_Input">Date-Of-Birth</div>  <input  id="Date-Of-Birth" type="date" class="info_inputs" min="1900-01-01" max="2025-01-01" ></div>
+                <div class="input"><div class="About_Input">Nationality</div> <input  id="Nationality" type="text" class="info_inputs" required maxlength="20" placeholder="lebanese"></div>
+            </div>
+
+            <div class="row_inputs">
+                <div class="input"><div class="About_Input">Email</div>  <input  id="Email" type="email" class="info_inputs" required placeholder="majdmaatouk@gmail.com" ></div>
+                <div class="input"><div class="About_Input">Phone</div> <input  id="phone" type="tel" class="info_inputs" required maxlength="8" placeholder="81******"></div>
+            </div>
+
+            <div class="row_inputs">
+                <div class="input"><div class="About_Input">Password</div>  <input  id="password" type="password" class="info_inputs" required max="10" ></div>
+                <div class="input"><div class="About_Input">Confirm Password</div> <input  id="con_password" type="password" class="info_inputs" required maxlength="10" ></div>
+            </div>  
+
+        </form>
+
+        
+        <hr>
+        <div class="OTHER_OPTIONS">
+            <button class="Next_button"> <a style="text-decoration: none; color: black; font-size: 100%;" href="index.html">Return</a></button>
+            <button class="Next_button" onclick="NextPage()">NEXT</button>
+            
+        </div>
+        <div class="message" id="display-message"></div>
+
+
+    </div>
+
+    
+    
+    <div id="page2" class="SIGN_IN_BOX">
+        <form class="SIGN_IN_FORM">
+            <h3 class="LOGIN">SIGN UP</h3>
+            <div class="row_inputs">
+                <div class="input"><div class="About_Input">Address</div>  <input  id="address" type="text" class="info_inputs" required maxlength="10" placeholder="beirut"></div>
+                <div class="input"><div class="About_Input">Income-Source</div>
+                     <select id="Income-Source" class="info_inputs" required>
+                        <option value="" class="info_inputs" disabled selected></option>
+                        <option value="Employment" id="select-value"class="info_inputs">Employment</option>
+                        <option value="Investments" id="select-value"  class="info_inputs">Investments</option>
+                        <option value="Retirement" id="select-value" class="info_inputs">Retirement</option>
+                        <option value="Enterpreneurship" id="select-value" class="info_inputs">Enterpreneurship</option>
+                        <option value="Rental-Income" id="select-value" class="info_inputs">Rental Income</option>
+                        <option value="Government-benefits" id="select-value" class="info_inputs">Government benefits</option>
+                        <option value="Other-sources" id="select-value" class="info_inputs">Other sources</option>
+
+                    </select> 
+                </div>
+            </div>
+
+            <div class="row_inputs">
+                <div class="input"><div class="About_Input">Type-Of-Account</div>
+                <select id="type-of-account" class="info_inputs" required>
+                    <option value="" class="info_inputs" disabled selected></option>
+                    <option value="checking" id="select-value" class="info_inputs">checking</option>
+                    <option value="savings" id="select-value" class="info_inputs">savings</option>
+                    <option value="business" id="select-value" class="info_inputs">buisness</option>          
+                </select>
+            </div>
+                <div class="input"><div class="About_Input">purpose</div>
+                    <select id="purpose"class="info_inputs" required>
+                        <option value="" class="info_inputs" disabled selected></option>
+                        <option value="personal" id="select-value" class="info_inputs">personal</option>
+                        <option value="business" id="select-value" class="info_inputs">business</option>
+                    </select>
+                </div>
+            </div>
+
+           
+            
+      
+        </form>
+
+        
+        <hr>
+        <div class="terms">
+            <input  id="terms" type="checkbox" class="checkbox"><a class="terms" href="" style="color: black;">Our Terms</a>
+        </div>
+        <div class="OTHER_OPTIONS">
+            <button class="Next_button" onclick="Back()">BACK</button>
+            <button class="Next_button" id="Next_button" onclick="LastPage()">NEXT</button>
+            <button class="Next_button" id="signedup"> <a style="text-decoration: none; color: black; font-size: 100%;" href="Main.html" >DONE</a></button>     
+        </div>
+        <div class="message" id="display-message-2"></div>
+    </div>
+    
+    
+    </div>
+
+    <script src="SIGNUP.js"></script>
+</body>
+</html>

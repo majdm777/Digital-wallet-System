@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+    <link rel="stylesheet" href="Account.css">
+</head>
+
+<body>
+
+    
+    <div class="info-box">
+        <div class="upper">
+            <div class="return">
+                <a href="Main.html" style="text-decoration: none; color: brown;">RETURN</a>
+            
+            </div>
+            <div class="delete" onclick="popupdelete()">Delete Account</div>
+        </div>
+        <hr>
+        <div class="acc-info">
+            <div class="info">
+                <div class="about-info">First-Name</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info">
+                <div class="about-info">Last-Name</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info">
+                <div class="about-info">Birthdate</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info">
+                <div class="about-info">Nationality</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+
+            <div class="info">
+                <div class="about-info">Email</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+
+            <div class="info changeable" data-type="tel" data-about="phone">
+                <div class="about-info">Phone</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+
+            <div class="info">
+                <div class="about-info">ID</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info changeable" data-type="text" data-about="Address">
+                <div class="about-info">Address</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info changeable" data-type="text" data-about="Incomesrc">
+                <div class="about-info">Income source</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info changeable" data-type="text" data-about="Type-Of-Acc">
+                <div class="about-info">Type Of Account</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+            <div class="info changeable" data-type="text" data-about="Purpose" onclick="Popup()">
+                <div class="about-info">Purpose</div>
+                <div class="box-get-info">
+                    <div class="get-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="popup" id="popup-id" aria-hidden="true">
+        <div class="popup-box" id="popup-box-id" role="dialog" aria-modal="true">
+            
+
+            <label class="field" id="IDfield">
+                <span class="field-label">new Info</span>
+                <input class="field-input" id="change-input">
+            </label>
+            
+            <div class="action">
+                <button class="action-button" id="cancelation" onclick="cancelPopup()">Cancel</button>
+                <button class="action-button" id="confirmation" onclick="confirmedOperation()">confirm</button>
+            </div>
+        </div>
+           <div class="popup-box" id="popup-box-id1" role="dialog" aria-modal="true">
+            <p style="color: red;">ARE YOU SURE YOU WANT TO DELETE YOUR ACCOUNT</p>
+            <div class="action">
+                <button class="action-button" id="cancelation" onclick="cancelPopup()">Cancel</button>
+                <button class="action-button" id="confirmation" onclick="confirmedDeletion()">Yes</button>
+            </div>
+        </div>
+    </div>
+    </div>
+   
+    <script  src="Account.js"></script>
+    
+</body>
+
+</html>

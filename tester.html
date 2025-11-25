@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body >
+    <style>
+        .wrapper{
+            display: flex;
+            justify-content:center;
+            align-items: center;
+        }
+        .box{
+            width: 50%;
+            height: 50%;
+            border: 1px solid black;
+            background-color: grey;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            
+
+        }
+        .line{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin-left: 2%;
+            margin-right: 2%;
+            width: 100%;
+            height: 2.5vw;
+            padding: 2%;
+        }
+        .inline{
+            width: 40%;
+            display: flex;
+            flex-direction: row;
+            
+        }
+        .nametag{
+            color:black;
+        }
+        .output{
+            margin-left: 1%;
+            color:brown
+        }
+        
+    </style>
+    <div class="wrapper" >
+
+        <div class="box">
+            <div class="line">
+                <div class="inline"><div class="nametag">FirstName:</div><div class="output" id="info-Firstname"></div></div>
+                <div class="inline"><div class="nametag">LastName:</div><div class="output" id="info-LastName"></div></div>
+            </div>
+            <div class="line">
+                <div class="inline"><div class="nametag">BirthDate:</div><div class="output" id="info-Date-Of-Birth"></div></div>
+                <div class="inline"><div class="nametag">Nationality:</div><div class="output" id="info-Nationality"></div></div>
+            </div>
+            <div class="line">
+                <div class="inline"><div class="nametag">Email:</div><div class="output" id="info-email"></div></div>
+                <div class="inline"><div class="nametag">Phone:</div><div class="output" id="info-phone"></div></div>
+            </div>
+            
+                    
+        </div>
+        <button onclick="hi()">majd</button>
+        
+
+
+    </div>
+    <script >
+        function addinfo(){
+            // let info_first_name=document.getElementById("info-Firstname")
+            // let info_Last_name=document.getElementById("info-LastName")
+            // let info_birthdate=document.getElementById("info-Date-Of-Birth")
+            // let info_nationality=document.getElementById("info-Nationality")
+            // let info_phone=document.getElementById("info-phone")
+            // let info_email=document.getElementById("info-email")
+            let output=document.getElementsByClassName("output")
+
+    
+        // info_first_name.innerHTML=localStorage.getItem("First-Name")
+        // info_Last_name.innerHTML=localStorage.getItem("Last-Name")
+        // info_birthdate.innerHTML=localStorage.getItem("birthdate")
+        // info_nationality.innerText=localStorage.getItem("nationality")
+        // info_phone.innerHTML=localStorage.getItem("phone")
+        // info_email.innerHTML=localStorage.getItem("email")
+        output[0].innerHTML=localStorage.getItem("First-Name")
+        output[1].innerHTML=localStorage.getItem("Last-Name")
+        output[2].innerHTML=localStorage.getItem("birthdate")
+        output[3].innerText=localStorage.getItem("nationality")
+        output[4].innerHTML=localStorage.getItem("email")
+        output[5].innerHTML=localStorage.getItem("phone")
+        
+
+        }
+        window.onload=addinfo();
+        
+        
+    </script>
+</body>
+</html>

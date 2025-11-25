@@ -1,0 +1,276 @@
+body,html{
+    background-color: grey;
+    margin: 0%;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    background-image: url(IMAGES/photo-1462206092226-f46025ffe607.jpg);  
+    background-repeat: no-repeat;
+    background-position: center;
+    object-fit: cover;
+    background-size: cover;
+}
+
+.Main{
+    border: 1px solid black;
+    width: 80%;
+    height:100vh;
+    overflow-y: auto;
+    background-color: rgba(252,242,224,255);
+
+   
+}
+.Main::-webkit-scrollbar{
+    display: none;
+}
+
+.nav-bar{
+    height: 20vh;
+    display: flex;
+    flex-direction: row;
+    background-image: url(IMAGES/banking-and-finance-concept-digital-connect-system-financial-and-banking-technology-with-integrated-circles-glowing-line-icons-and-on-blue-background-design-vector.jpg);  
+    background-repeat: no-repeat;
+    background-position: center;
+    object-fit: cover;
+    background-size: cover;
+}
+.Return-button{
+    width: 25%;
+    height: 100%;
+    font-size: 200%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* cursor: pointer; */
+    color: brown;
+}
+.Future-idea{
+    width: 50%;
+    
+}
+hr{
+    margin-top: 0%;
+    
+}
+.Delete-button{
+    cursor: pointer;
+    color:brown;
+    font-size: 125%;
+    height: 100%;
+    width: 25%;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+}
+
+
+
+
+.transactions-box{
+    
+    display: flex;
+    flex-direction: column-reverse;
+    /* justify-content: center; */
+    align-items: center;
+    width: 100%;
+
+    
+}
+.emptymsge{
+    font-size: 150%;
+    color: black;
+    opacity: 50%;
+}
+
+.Transaction-box{
+
+    border: 1px solid black;
+    
+    overflow: hidden;
+    height: 7vh;
+    width: 70vw;
+    margin: 0.3%;
+    transition: height 0.4s ease;
+
+}
+
+
+
+.transaction-In{
+    
+    display: flex;
+    flex-direction: row;
+    height: 7vh;
+    background-color: #1E3A8A;
+    
+}
+.transaction-In:hover{
+    background-color: #132d75;
+}
+.Transaction-In-All{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.From-To{
+    width: 40%;   
+     
+}
+.To-tran{
+    width: 33%;
+    color: green;
+}
+.tran-icon{
+    width: 33%;
+}
+.From-tran{
+    color: red;
+    width: 33%;
+}
+
+.Transaction-Out{
+    background-color: rgb(43, 43, 43);
+    height: 25vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    
+    
+
+
+}
+.Transaction-box.active{
+    height: 32vh;
+    
+}
+.Transaction-Out-All{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Tran-Balance{
+    width: 33%;
+}
+#Spend{
+    color: red;
+}
+#wallet{
+    color: green;
+}
+
+
+
+
+.Users{
+    width: 33%;
+}
+.User-box-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5%;
+}
+/* .User-Id{
+
+margin: 0px;
+} */
+#From-Id{
+    color: red;
+}
+#To-Id{
+    color: green;
+}
+.User-email , .Tran-type{
+    font-size: 70%;
+    color: grey;
+}
+
+
+
+
+
+.Tran-Info{
+    width: 33%;
+
+}
+.infos{
+    margin: 2%;
+    color: rgb(212, 212, 212);
+}
+
+
+
+
+.Amount{
+    width: 25%;
+}
+.Type{
+    width: 25%;
+}
+.Tran_code{
+    width: 10%;
+}
+.remove_transaction{
+    color: darkkhaki;
+    cursor: pointer;
+}
+
+
+
+
+/* phone */
+@media (min-width:51px) and (max-width:700px){
+    .Main{
+        width: 90%;
+    }
+    .Return-button{
+        font-size: 125%;
+    }
+    .Delete-button{
+        font-size: 80%;
+    }
+    .Transaction-box{
+        width: 85vw;
+        font-size: 75%;
+    }
+    .Amount{
+        width: 10%;
+    }
+    .From-To{
+        width: 55%;
+    }
+    .tran-icon{
+        width: 20%;
+    }
+    .From-tran{
+        width: 40%;
+    }
+    .To-tran{
+        width: 40%;
+    }
+
+}
+
+
+
+@media(min-width:2000px) {
+
+
+
+ 
+    .Return-button{
+        font-size: 400%;
+    }
+    .Delete-button{
+        font-size: 300%;
+    }
+    .Transaction-box{
+        
+        font-size: 250%;
+    }
+
+
+}

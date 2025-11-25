@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="ForgetPass.css">
+    <title>LOG-IN page</title>
+</head>
+<body">
+    <div class="wrapper">
+        
+    <div class="SIGN_IN_BOX">
+        <h3 class="LOGIN">Please enter your email to recover your Password</h3>
+        <form class="SIGN_IN_FORM">  
+
+            <input id="email" placeholder="Email" type="email" required="required" class="input-box">           
+                     
+        </form>
+        <div class="OTHER_OPTIONS">
+            <button class="SIGN_IN_BUTTON"><a style="text-decoration: none; color: grey;" href="index.html">GO BACK</a></button>
+            <button class="SIGN_IN_BUTTON" id="request-button" onclick="sendver()">SEND</button>
+            
+
+        </div>
+        
+        <div class="OTHER_OPTIONS">
+            <div class="message" id="request-message"></div>
+            <div class="timer" id="countdown"></div>
+            
+        </div>
+
+    </div>
+    
+    </div>
+
+    <script src="ForgetPass.js"></script>
+</body>
+</html>

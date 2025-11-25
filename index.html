@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="STYLESHEET.css">
+    <title>LOG-IN page</title>
+</head>
+<body">
+    <div class="wrapper">
+        
+    <div class="SIGN_IN_BOX">
+        <form class="SIGN_IN_FORM">
+            <h3 class="LOGIN">LOG IN</h3>
+            <p id="validation-message"></p>
+            <input id="email" placeholder="Email" type="email" required="required" class="input-box">
+            <input id="password" placeholder="Password" type="password" required="required" class="input-box" oninput="show_icon()">
+           <span class="show-password" onclick="Show_password()"></span>
+            <button class="SIGN_IN_BUTTON" type="button" onclick="checkacc()">LOG IN</button>
+            
+        </form>
+        <div class="OTHER_OPTIONS">
+            <a class="mar1" href="ForgetPass.html">Forget Password?</a>
+            <a class="mar1" href="SIGNUP.html">Don't Have An Account?</a>
+        </div>
+
+    </div>
+    
+    </div>
+
+    <script src="LOGIN.js"></script>
+</body>
+</html>
