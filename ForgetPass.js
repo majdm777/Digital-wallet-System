@@ -12,25 +12,13 @@ function update(){
         countdown.innerHTML=""
         clearInterval(timerId)
         button.disabled=false
-        retrun;
+        return;
     }
     time--
     countdown.innerHTML=time
 }
 
-function sendver(){
-
-    let emailInput = document.getElementById("email").value;
-    let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
-    let email=localStorage.getItem("email")
-    if (!emailPattern.test(emailInput)) {
-        alert("Please enter a valid email address.");
-        return; 
-    }
-    if(emailInput!=email){
-        alert("Could Not find your account");
-        return;        
-    }
+function startTimer(){
     time=30;
     button.style.backgroundColor="rgba(194,181,173,255)"
     button.disabled=true
@@ -38,6 +26,19 @@ function sendver(){
     countdown.innerHTML=time
 
     timerId=setInterval(update,1000)
-    return;
 }
+
+// Check if form was successfully submitted when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if success indicator exists (set by PHP when send is successful)
+    if(typeof sendSuccess !== 'undefined' && sendSuccess === true){
+        startTimer();
+    }
+    
+    // Also check if success message div exists
+    var successIndicator = document.getElementById('success-indicator');
+    // if(successIndicator && successIndicator.textContent.trim() !== ''){
+    //     startTimer();
+    // }
+});
 
