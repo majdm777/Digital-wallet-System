@@ -15,25 +15,33 @@ function show_icon(){
 }
 
 
-let info=document.getElementsByClassName("input-box")
-let mess=document.getElementById("validation-message")
-function checkacc(){
-   // mess.innerText ="hi"
-    let email=localStorage.getItem("email")
-    let pass=localStorage.getItem("password")
-    if(info[0].value!=email){
-        mess.innerText="invalid email"
-
-        return;
+function resetMessage() {
+    var messageElement = document.getElementById("validation-message");
+    if (messageElement) {
+        messageElement.textContent = "";
     }
-    if(info[1].value!=pass){
-        mess.innerText="invalid password"
-        return;
-    }
-    mess.innerText=""
-    window.location.href="Main.html"
-
 }
+ 
+
+// let info=document.getElementsByClassName("input-box")
+// let mess=document.getElementById("validation-message")
+// function checkacc(){
+//    // mess.innerText ="hi"
+//     let email=localStorage.getItem("email")
+//     let pass=localStorage.getItem("password")
+//     if(info[0].value!=email){
+//         mess.innerText="invalid email"
+
+//         return;
+//     }
+//     if(info[1].value!=pass){
+//         mess.innerText="invalid password"
+//         return;
+//     }
+//     mess.innerText=""
+//     window.location.href="Main.html"
+
+// }
 
 function Show_password() {
     var password = document.getElementById("password");
