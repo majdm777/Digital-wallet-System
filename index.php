@@ -8,6 +8,7 @@ if(isset($_POST['LOGIN'])){
     }else{
         if($email == "majdmaatouk@gmail.com" && $password == "12345678"){
             header("Location: Main.html");
+            exit();
             
         }else{
             $message="Invalid email or password";
@@ -32,13 +33,13 @@ if(isset($_POST['LOGIN'])){
             <p id="validation-message"><?php echo $message; ?></p>
             <input id="email" placeholder="Email" type="email" required="required" class="input-box" name="email" oninput="resetMessage()">
             <input id="password" placeholder="Password" type="password" required="required" class="input-box" oninput="show_icon(); resetMessage();" name="password">
-           <span class="show-password" onclick="Show_password()"></span>
-            <input  class="SIGN_IN_BUTTON" type="submit" name="LOGIN"></button>
+            <span class="show-password" onclick="Show_password()"></span>
+            <input type="submit" name="LOGIN"  class="SIGN_IN_BUTTON" value="LOGIN" >
             
         </form>
         <div class="OTHER_OPTIONS">
-            <a class="mar1" href="ForgetPass.html">Forget Password?</a>
-            <a class="mar1" href="SIGNUP.php">Don't Have An Account?</a>
+            <a class="mar1" href="ForgetPass.php">Forget Password?</a>
+            <a class="mar1" href="SIGNUP.html">Don't Have An Account?</a>
         </div>
     </div>
     </div>
