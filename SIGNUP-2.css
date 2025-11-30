@@ -19,7 +19,7 @@
     
     background-color: whitesmoke;
     width: 40%;
-    height: 60%;
+    height: 72%;
     padding:1%;
     margin: 0PX;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -74,7 +74,7 @@
 .info_inputs{
     
     width: 70%;
-    height: 3.5vw;
+    height: 2vw;
     box-sizing: border-box;
     border: 1px solid rgba(194,181,173,255);
     border-radius: 1px;
