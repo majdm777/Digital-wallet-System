@@ -1,77 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BANK*</title>
     <link rel="stylesheet" href="MainPage.css">
 </head>
-<body> 
-    <!-- <div class="top">majd</div> -->
+
+<body>
+
     <div class="wrapper">
-        
-        <div class="left-side">
+
+        <!-- LEFT SIDE -->
+        <div class="left-side glass-card">
             <div class="top-left-corner">
                 <img src="IMAGES/bank.png" width="32px" height="32px" class="bank-image">
                 <span id="bank-name"> *BANK*</span>
-                
             </div>
-            <hr >
-            <div class="Left-navbar">
-                <div class="nth-bar"><a href="index.html" style="text-decoration: none; color: black;">Log out</a></div>
-                <div class="nth-bar"><a href="Account.html" style="text-decoration: none; color: black;">Account</a></div>
-                <div class="nth-bar"><a href="History.html" style="text-decoration: none; color: black;">History</a></div>
-                <div class="nth-bar" onclick="showWallet()">wallet</div>
-                <div class="nth-bar" onclick="showBallance()">Balance</div>
-                <div class="nth-bar"><a href="transaction.Html" style="text-decoration: none; color: black;">Transactions</a></div>
 
-                
-                
-                
-                
-            </div>  
             <hr>
+
+            <div class="Left-navbar">
+                <div class="nth-bar"><a href="index.html">Log out</a></div>
+                <div class="nth-bar"><a href="Account.html">Account</a></div>
+                <div class="nth-bar"><a href="History.html">History</a></div>
+                <div class="nth-bar" onclick="showWallet()">Wallet</div>
+                <div class="nth-bar" onclick="showBallance()">Balance</div>
+                <div class="nth-bar"><a href="transaction.Html">Transactions</a></div>
+            </div>
+
+            <hr>
+
             <div class="Contact_us">
-                <a href="#"  style="text-decoration: underline;color: black;">Contact us</a>
-            </div>  
-            
-                
-                
+                <a href="#">Contact us</a>
+            </div>
         </div>
+
+        <!-- CENTER -->
         <div class="center">
-            <div class="center-box">
+            <div class="center-box glass-card">
                 <div class="box-amount">
                     <div class="amount"></div>
                 </div>
+
                 <div class="transaction-buttons">
                     <button class="transaction-button" id="cash_out" onclick="PopupByCashOut()">Cash-out</button>
                     <button class="transaction-button" id="cash_send" onclick="PopupByCashSend()">Cash-send</button>
                 </div>
-                
-            </div>
-            <div class="News">
-
             </div>
         </div>
-        <div class="right-side">
-            <hr>
-            <div class="rside_user_info">
-                <div class="user_info" id="user-id"><span>User-Id:</span><span class="get-info" id="get-id"></span></div>
-                <div class="user_info" id="user-email"><span>Email:</span><span class="get-info" id="get-email"></span></div>
 
-            </div>
+        <!-- RIGHT SIDE -->
+        <div class="right-side glass-card">
             <hr>
-            
-            
+
+            <div class="rside_user_info">
+                <div class="user_info" id="user-id"><span>User-Id:</span><span class="get-info" id="get-id"></span>
+                </div>
+                <div class="user_info" id="user-email"><span>Email:</span><span class="get-info" id="get-email"></span>
+                </div>
+            </div>
+
+            <hr>
+
             <div class="rside_user_operations">
                 <div class="rside_user_operations_title" onclick="clearOperations()">operations</div>
-                
-                
+
                 <div class="rside_user_operations-box">
-                    <div class="operation">
+                    <div class="operation glass-small">
                         <div class="operation-info">
                             <span class="users-operation-info" id="from-operation-info">majd-4536</span>
-                            <span class="type-operation-info" id="cash_type" >cash-send</span>
+                            <span class="type-operation-info" id="cash_type">cash-send</span>
                             <span class="users-operation-info" id="to-operation-info">jad</span>
                         </div>
                         <div class="operation-info">
@@ -81,17 +81,14 @@
                         </div>
                     </div>
                 </div>
-                
-                
-
-
 
             </div>
         </div>
     </div>
-    <!-- For cash POPUP 1* -->
-    <div class="popup" id="popup-id" aria-hidden="true">
-        <div class="popup-box" id="popup-box-id" role="dialog" aria-modal="true">
+
+    <!-- POPUP 1 -->
+    <div class="popup" id="popup-id">
+        <div class="popup-box glass-card">
             <label class="field" id="to-field">
                 <span class="field-label">To</span>
                 <input type="text" class="field-input" id="to-input" placeholder="User-Id">
@@ -101,44 +98,41 @@
                 <span class="field-label">Amount</span>
                 <input type="number" class="field-input" id="amount-input" min="0.01" step="0.01" placeholder="0.00">
             </label>
-            
+
             <div class="action">
-                <button class="action-button" id="cancelation" onclick="cancelPopup()">Cancel</button>
-                <button class="action-button" id="confirmation" onclick="confirmedOperation()">confirm</button>
-            </div>
-        </div>
-    </div>
-<!-- For wallet POPUP 2*-->
-    <div class="popup" id="popup-id-2" aria-hidden="true">
-        <div class="popup-box" id="popup-box-id" role="dialog" aria-modal="true">
-            
-            <p id="wallet" style="font-size: 150%; background-color: grey;"></p>
-            <div class="action">
-                <button class="action-button" id="cancelation" onclick="cancelPopup()">OK</button>
-                
+                <button class="action-button" onclick="cancelPopup()">Cancel</button>
+                <button class="action-button" onclick="confirmedOperation()">Confirm</button>
             </div>
         </div>
     </div>
 
-<!-- For Ballance POPUP3* -->
- <div class="popup" id="popup-id-3" aria-hidden="true">
-        <div class="popup-box" id="popup-box-id" role="dialog" aria-modal="true">
-            
+    <!-- POPUP 2 -->
+    <div class="popup" id="popup-id-2">
+        <div class="popup-box glass-card">
+            <p id="wallet"></p>
+            <div class="action">
+                <button class="action-button" onclick="cancelPopup()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP 3 -->
+    <div class="popup" id="popup-id-3">
+        <div class="popup-box glass-card">
             <div class="Balance-info">
-              <div class="balance-info-row"><span class="B1" id="Spend"></span></div>
-               <div class="balance-info-row"><span class="B1" id="Income"></span></div>
-                <hr style="width: 100%;">
-               <div class="balance-info-row">Your Balance: <span class="B1" id="Ba_lance"></span></div>
+                <div class="balance-info-row"><span class="B1" id="Spend"></span></div>
+                <div class="balance-info-row"><span class="B1" id="Income"></span></div>
+                <hr>
+                <div class="balance-info-row">Your Balance: <span class="B1" id="Ba_lance"></span></div>
             </div>
+
             <div class="action">
-                <button class="action-button" id="cancelation" onclick="cancelPopup()">OK</button>
-                
+                <button class="action-button" onclick="cancelPopup()">OK</button>
             </div>
         </div>
     </div>
 
-
-    <script src="Main.js">  
-    </script>
+    <script src="Main.js"></script>
 </body>
+
 </html>

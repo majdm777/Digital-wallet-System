@@ -1,266 +1,308 @@
-body{
-    margin: 0%;
-     background-image: url(IMAGES/photo-1462206092226-f46025ffe607.jpg);  
-    background-repeat: no-repeat;
-    background-position: center;
-    object-fit: cover;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: url('IMAGES/photo-1462206092226-f46025ffe607.jpg');
     background-size: cover;
-
-}
-.top{
-    width: 100%;
-    height: 10vh;
-    background-color:rgba(252,242,224,255);
-    
+    background-position: center;
+    color: #fff;
 }
 
+/* GLASSMORPHISM */
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+}
 
+.glass-small {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 12px;
+}
 
-
-.wrapper{
-    /* background-color: whitesmoke; */
+.wrapper {
+    display: flex;
     width: 100%;
     height: 100vh;
-    display: flex;
-    flex-direction: row;
-   
-    
+    gap: 15px;
+    padding: 20px;
 }
 
-/*  */
-.left-side{
-    width: 15%;
-    border: 1px solid #1E3A8A;
-    background-color: grey;
+/* LEFT SIDE */
+.left-side {
+    width: 18%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: rgb(4, 4, 106);
+    border: 1px solid transparent;
     padding: 1%;
-    
+    background-color: rgb(203, 228, 255);
+    font-size: medium;
 }
-.top-left-corner{
+
+.top-left-corner {
     height: 5%;
     width: 100%;
     display: flex;
-    justify-content:space-between;
-    
+    justify-content: center;
 }
-.Left-navbar{
+
+.bank-image {
+    margin-right: 15px;
+}
+
+.Left-navbar {
     margin-top: 0%;
     width: 100%;
     display: flex;
     flex-direction: column;
+    color: rgb(4, 4, 106);
 }
-.nth-bar{
-    display: flex;
-    justify-content:start ;
-    font-size: 125%;
-    color: black;
-    margin: 5%;
+
+.Left-navbar a {
+    color: rgb(4, 4, 106);
+    text-decoration: none;
+}
+
+.nth-bar {
+    margin: 12px 0;
     cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    transition: 0.3s;
+    display: flex;
+    justify-content: start;
+    font-size: 115%;
+    border: none;
+    border-radius: 18px;
+    transition: 0.3s;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3)
+}
+
+.Left-navbar .nth-bar:hover {
+    background: rgba(39, 41, 133, 0.25);
 }
 
 
-/*  */
-.center{
-    width: 60%;
-    display:flex ;
+/* CENTER */
+.center {
+    width: 55%;
+    display: flex;
     flex-direction: column;
+    gap: 20px;
     justify-content: center;
-    align-items: center;
-    background:transparent;
-    overflow-y:scroll ;
-   
+    background: transparent;
+    overflow-y: scroll;
 }
-.center::-webkit-scrollbar{
+
+.center::-webkit-scrollbar {
     display: none;
 }
-.center-box{
-    border: 2px solid rgba(53,54,108,255);
-    width: 60%;
-    height: 60%;
-    background-color: rgba(252,242,224,255);
+
+.center-box {
+    text-align: center;
+    border: 2px solid transparent;
+    height: 35%;
+    width: 65%;
+    margin-left: 120px;
+    background-color: rgb(203, 228, 255);
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 
-
 }
-.box-amount{
-    border: 1px solid rgba(53,54,108,255);
+
+.box-amount {
+    border: 1px solid transparent;
     width: 80%;
     height: 50%;
     margin: 5%;
-    background-image: url(IMAGES/banking-and-finance-concept-digital-connect-system-financial-and-banking-technology-with-integrated-circles-glowing-line-icons-and-on-blue-background-design-vector.jpg);
-   
-    background-repeat: no-repeat;
-    background-position: center;
-    object-fit: cover;
-    background-size: cover;
     display: flex;
-    justify-content: start;
+    justify-content: center;
     align-items: end;
 }
-.amount{
-    /* background-color: whitesmoke; */
+
+.amount {
     font-size: 200%;
-   padding: 1%;;
+    padding: 1%;
+    ;
     border-radius: 8px;
-    color: #b0603b;
+    color: rgb(4, 4, 106);
 }
-.transaction-buttons{
+
+.transaction-buttons {
     margin: 5%;
     display: flex;
     flex-direction: row;
     width: 100%;
     justify-content: center;
 }
-.transaction-button{
-    margin: 1%;
-    width: 25%;
-    padding: 0%;
-    height: 3vw;
-    border: 1px solid #b0603b;
-    background-color: #1d1921;
-    color: #dcd3c8;
 
+.transaction-button {
+    padding: 12px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.25);
+    color: rgb(4, 4, 106);
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    font-size: medium;
+}
+
+.transaction-button:hover {
+    background: rgba(39, 41, 133, 0.25);
 }
 
 
-
-
-
-
-/*  */
-.right-side{
+/* RIGHT SIDE */
+.right-side {
     width: 25%;
-    background-color: rgba(252,242,224,255);
+    background-color: rgb(203, 228, 255);
     opacity: 100%;
-    padding:1% ;
-    /* overflow-y: hidden; */
-    /* overflow: hidden; */
+    padding: 1%;
 }
 
-.rside_user_info{
+.rside_user_info {
     width: 100%;
     height: 20%;
     display: flex;
     flex-direction: column;
     /* align-items: center; */
     justify-content: center;
-    
-    
 }
-.user_info{
-    color:#b0603b;
-    font-size: 125%;
+
+.user_info {
+    color: rgb(4, 4, 106);
+    font-size: 115%;
     display: flex;
     flex-direction: row;
     margin: 1%;
 }
 
-
-
-.rside_user_operations{
-    border: 1px solid black;
+.rside_user_operations {
+    border: 1px solid transparent;
     height: 75%;
     padding: 1%;
-    
-
-   overflow-y: auto;
-   overflow-x: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
-.rside_user_operations::-webkit-scrollbar{
+
+.rside_user_operations::-webkit-scrollbar {
     display: none;
 }
 
-.rside_user_operations_title{
+.rside_user_operations_title {
     font-size: 125%;
-    color: #b0603b;
+    color: rgb(4, 4, 106);
     display: flex;
     justify-content: center;
     cursor: pointer;
 }
-.rside_user_operations-box{
+
+.rside_user_operations-box {
     height: fit-content;
     display: flex;
     flex-direction: column-reverse;
 }
-.rside_user_operations_operation{
-    border:1px solid #1d1921;
+
+.rside_user_operations_operation {
+    border: 1px solid #1d1921;
     display: flex;
     flex-direction: column;
     padding: 0%;
     overflow-y: scroll;
     width: 100%;
     height: 100%;
-   
 }
-.emptyMsge{
+
+.emptyMsge {
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 50%;
 }
 
-.operation{
-    border: 1px solid black;
+.operation {
+    margin-bottom: 12px;
+    border: 1px solid transparent;
     width: 100%;
     height: 15%;
     margin-top: 1%;
     display: flex;
     flex-direction: row;
-    background-color: #1E3A8A;
-    
+    background-color: blue;
 }
 
-.operation-info{
+.operation-info {
     width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-.users-operation-info{
+
+.users-operation-info {
     margin: 1%;
     font-size: 100%;
 
 }
-.type-operation-info{
+
+.type-operation-info {
     margin: 0%;
     color: grey;
     font-size: 75%;
 }
 
-#from-operation-info{
+#from-operation-info {
     color: red;
 }
-#to-operation-info{
+
+#to-operation-info {
     color: green;
 }
+
 #amount-operation-info {
-    color:#dcd3c8;
+    color: #dcd3c8;
     background-color: black;
 }
- #date-operation-info{
-    color:#dcd3c8;
+
+#date-operation-info {
+    color: #dcd3c8;
 
 }
 
-.popup{
+
+/* POPUPS */
+.popup {
     display: none;
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,.35);
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .35);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     z-index: 1000;
-    /* display: none; */
-    
-}
-#popup-id , #popup-id-2 ,#popup-id-3{
-    display:none;
 }
 
-.popup-box{
+#popup-id, #popup-id-2, #popup-id-3 {
+    display: none;
+}
+
+.popup-box {
     width: 40%;
     height: 50%;
     background-color: white;
@@ -270,10 +312,11 @@ body{
     justify-content: center;
     align-items: center;
     box-shadow: 0px 50px 100px black;
-    
+
 
 }
-.field{
+
+.field {
     width: 100%;
     height: 25%;
     display: flex;
@@ -282,35 +325,40 @@ body{
     /* margin-top: 3%;
     margin-bottom: 3%; */
 }
-.field-label{
+
+.field-label {
     width: 25%;
     display: flex;
     justify-content: end;
 }
-.field-input{
+
+.field-input {
     width: 40%;
     height: 3vh;
     border: 1px solid black;
 }
-#to-field{
+
+#to-field {
     display: flex;
-    
+
 }
 
-.action{
+.action {
     display: flex;
     width: 100%;
     flex-direction: row;
     justify-content: center;
 
 }
-.action-button{
+
+.action-button {
     border: 1px solid black;
     width: 25%;
     height: 4vh;
     margin: 1%;
 }
-.Balance-info{
+
+.Balance-info {
     width: 94%;
     height: 50%;
     display: flex;
@@ -320,7 +368,8 @@ body{
     margin: 5%;
     background-color: grey;
 }
-.balance-info-row{
+
+.balance-info-row {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -328,13 +377,16 @@ body{
     justify-content: center;
     align-items: center;
 }
-#Spend{
+
+#Spend {
     color: red;
 }
-#Income{
+
+#Income {
     color: green;
 }
-.B1{
+
+.B1 {
     font-size: 125%;
     background-color: #1d1921;
     margin: 1%;
@@ -344,48 +396,51 @@ body{
 
 
 
-@media (min-width:51px) and (max-width:700px){
+@media (min-width:51px) and (max-width:700px) {
 
 
-    .wrapper{
+    .wrapper {
         /* justify-content: start; */
         flex-direction: column;
         height: auto;
-        
+
     }
 
 
 
-    .left-side{
-        
+    .left-side {
+
         width: 100%;
         /* background-color: transparent; */
         /* flex-direction: column; */
         border: none;
         padding: 0px;
         /* position:sticky; */
-        
+
     }
-    .Left-navbar{
+
+    .Left-navbar {
         flex-direction: row;
         /* justify-content: center; */
         align-items: center;
         height: 5vh;
     }
-    .top-left-corner{
+
+    .top-left-corner {
         justify-content: normal;
     }
-   
-    .nth-bar{
+
+    .nth-bar {
         width: 15vw;
         margin: 0px;
 
     }
 
-    .left-side hr{
+    .left-side hr {
         display: none;
     }
-    #bank-name{
+
+    #bank-name {
         /* display: none; */
         font-size: 50%;
         display: flex;
@@ -393,38 +448,44 @@ body{
         align-items: center;
 
     }
-    .Contact_us{
+
+    .Contact_us {
         display: none;
     }
-    .Left-navbar{
-        font-size: 50%;
-    }
-    .Contact_us{
+
+    .Left-navbar {
         font-size: 50%;
     }
 
-    .center{
+    .Contact_us {
+        font-size: 50%;
+    }
+
+    .center {
         width: 100%;
         height: 100vh;
     }
 
-    .center-box{
+    .center-box {
         width: 90%;
     }
-    .amount{
+
+    .amount {
         font-size: 125%;
     }
-    .transaction-buttons{
+
+    .transaction-buttons {
         height: 6vh;
         margin: 1%;
     }
-    .transaction-button{
+
+    .transaction-button {
         width: 30%;
         height: 100%;
         font-size: 50%;
     }
 
-    .popup-box{
+    .popup-box {
         width: 90%;
     }
 
@@ -434,65 +495,69 @@ body{
 
 
 
-    .right-side{
+    .right-side {
         display: none;
     }
 }
 
 @media(min-width:2000px) {
-    .bank-image{
+    .bank-image {
         width: 64px;
         height: 64px;
     }
-    #bank-name{
+
+    #bank-name {
         font-size: 250%;
     }
 
-    .Left-navbar{
-        font-size: 250%;
-    }
-    .Contact_us{
+    .Left-navbar {
         font-size: 250%;
     }
 
+    .Contact_us {
+        font-size: 250%;
+    }
 
-    
 
-    .amount{
+
+
+    .amount {
         font-size: 500%;
     }
 
-    .transaction-button{
-       
+    .transaction-button {
+
         font-size: 250%;
     }
 
 
-    .field{
+    .field {
         font-size: 300%
     }
 
-    .field-input{
-    width: 40%;
-    height: 4.5vh;
-    border: 2.5px solid black;
-    font-size: 50%;
-    
+    .field-input {
+        width: 40%;
+        height: 4.5vh;
+        border: 2.5px solid black;
+        font-size: 50%;
+
     }
-    .action-button{
+
+    .action-button {
         font-size: 200%;
     }
 
 
 
-    .user_info{
+    .user_info {
         font-size: 300%;
     }
 
-    .rside_user_operations_title{
+    .rside_user_operations_title {
         font-size: 250%;
     }
-    .operation-info{
+
+    .operation-info {
         font-size: 200%;
     }
 
