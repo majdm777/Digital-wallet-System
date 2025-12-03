@@ -179,6 +179,7 @@ window.onload = function() {
 function createOperation(USER_ID,cashType,toinfo,date,type,amount){
     const newOperation =document.createElement("div");
     newOperation.classList.add("operation");
+    newOperation.classList.add("glass-small")
     newOperation.innerHTML=`
                     <div class="operation-info">
                         <span class="users-operation-info" id="from-operation-info">${USER_ID}</span>
