@@ -13,7 +13,7 @@
     <div class="wrapper">
 
         <!-- LEFT SIDE -->
-        <div class="left-side glass-card">
+        <div class="left-side">
             <div class="top-left-corner">
                 <img src="IMAGES/bank.png" width="32px" height="32px" class="bank-image">
                 <span id="bank-name"> *BANK*</span>
@@ -22,14 +22,12 @@
             <hr>
 
             <div class="Left-navbar">
-                
-                <a href="index.php"><div class="nth-bar">LOG OUT</div></a>
-                <a href="Account.html"><div class="nth-bar">Manage account</div></a>
-                <a href="History.html"><div class="nth-bar">History</div></a>
+                <div class="nth-bar"><a href="index.html">Log out</a></div>
+                <div class="nth-bar"><a href="Account.html">Account</a></div>
+                <div class="nth-bar"><a href="History.html">History</a></div>
                 <div class="nth-bar" onclick="showWallet()">Wallet</div>
                 <div class="nth-bar" onclick="showBallance()">Balance</div>
-                <a href="transaction.Html"><div class="nth-bar">Transactions</div></a>
-
+                <div class="nth-bar"><a href="transaction.Html">Transactions</a></div>
             </div>
 
             <hr>
@@ -41,7 +39,7 @@
 
         <!-- CENTER -->
         <div class="center">
-            <div class="center-box glass-card">
+            <div class="center-box">
                 <div class="box-amount">
                     <div class="amount"></div>
                 </div>
@@ -54,7 +52,7 @@
         </div>
 
         <!-- RIGHT SIDE -->
-        <div class="right-side glass-card">
+        <div class="right-side">
             <hr>
 
             <div class="rside_user_info">
@@ -90,7 +88,7 @@
 
     <!-- POPUP 1 -->
     <div class="popup" id="popup-id">
-        <div class="popup-box glass-card">
+        <div class="popup-box">
             <label class="field" id="to-field">
                 <span class="field-label">To</span>
                 <input type="text" class="field-input" id="to-input" placeholder="User-Id">
@@ -110,7 +108,7 @@
 
     <!-- POPUP 2 -->
     <div class="popup" id="popup-id-2">
-        <div class="popup-box glass-card">
+        <div class="popup-box">
             <p id="wallet"></p>
             <div class="action">
                 <button class="action-button" onclick="cancelPopup()">OK</button>
@@ -120,7 +118,7 @@
 
     <!-- POPUP 3 -->
     <div class="popup" id="popup-id-3">
-        <div class="popup-box glass-card">
+        <div class="popup-box">
             <div class="Balance-info">
                 <div class="balance-info-row"><span class="B1" id="Spend"></span></div>
                 <div class="balance-info-row"><span class="B1" id="Income"></span></div>
