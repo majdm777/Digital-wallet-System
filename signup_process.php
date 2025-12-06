@@ -1,5 +1,11 @@
 <?php
 session_start();
+try {
+    $db = new mysqli('localhost','root','','wallet_tester');
+} catch (\Exception $e) {
+    // Die with a connection error message
+    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>"); 
+}
 
 // Simple processing for the final signup form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
@@ -14,6 +20,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
     $income = trim($_POST['Income-Source'] ?? '');
     $phone = trim($_POST['Phone'] ?? '');
     $type = trim($_POST['Type-Of-Account'] ?? '');
+    
+    //adding user to the data base
+    $query="INSERT INTO user 
+            (ID, FirstName, LastName, Email, Date_of_birth, Nationality, Address, Phone, Type_of_Account, Income_Source,password)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            die("Prepare failed: " . $db->error);
+        }
+        $ID = random_int(10000, 99999);
+
+        
+        $stmt->bind_param('issssssssss', $ID,$first, $last , $email,$dob,$nationality,$address,$phone,$type,$income,$password);
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
+        
+
 
     // Persist user to a simple CSV file (users.csv) — replace with DB in production
     // $row = [
@@ -55,5 +81,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
 // If reached without POST, show a small message
 // (no output before header() calls above)
 // echo 'No submission detected.';
-
+$db->close();
 ?>
