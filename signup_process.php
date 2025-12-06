@@ -30,10 +30,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
         if (!$stmt) {
             die("Prepare failed: " . $db->error);
         }
-        $ID = random_int(10000, 99999);
 
+        do{
+        $ID = random_int(10000, 99999);
+        $query1="SELECT ID FROM user WHERE ID=?";
+        $stat=$db->prepare($query1);
+            if(!$stat) {
+                die("Prepare failed: " . $db->error);
+            }
+        $stat->bind_param('i',$ID);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }        
+        $result=$stat->get_result();
+        }while($result->num_rows>0);
+
+
+
+
+
+
+
+
+        $passHashed=password_hash($password,PASSWORD_DEFAULT);
         
-        $stmt->bind_param('issssssssss', $ID,$first, $last , $email,$dob,$nationality,$address,$phone,$type,$income,$password);
+        $stmt->bind_param('issssssssss', $ID,$first, $last , $email,$dob,$nationality,$address,$phone,$type,$income,$passHashed);
         if (!$stmt->execute()) {
             die("Execute failed: " . $stmt->error);
         }
