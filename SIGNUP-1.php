@@ -1,6 +1,16 @@
 <?php
 session_start();
 
+try {
+    $db = new mysqli('localhost','root','','wallet_tester');
+} catch (\PDOException $e) {
+    // Die with a connection error message
+    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>"); 
+}
+
+$query1="SELECT Email FROM user WHERE Email=?";
+
+
 // Simple target email to check against. Replace or extend as needed.
 $TARGET_EMAIL = 'majdmaatouk@gmail.com';
 
@@ -9,7 +19,13 @@ $message = '';
 // Handle email submission from SIGNUP.html
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $email = trim($_POST['Email'] ?? '');
-    if ($email === $TARGET_EMAIL) {
+    $stmt=$db->prepare($query1);
+    $stmt->bind_param('s',$email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+
+    if ($result->num_rows == 0) {
         // generate a 6-digit code and store it in session
         $code = random_int(100000, 999999);
         $_SESSION['signup_email'] = $email;
@@ -25,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         // For local testing we also display the code on-screen.
         $message = 'Verification code sent to ' . htmlspecialchars($email) . '. Please check your email and enter the code below. (code: ' . htmlspecialchars($code) . ')';
     } else {
-        $message = 'Email not recognized. Please use the registered email.';
+        $message = 'Email already exists. Please use another email.';
     }
 }
 
