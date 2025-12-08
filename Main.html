@@ -1,138 +1,130 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>  <html lang="en">  <head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>BANK*</title>  
+    <link rel="stylesheet" href="MainPage.css">  
+</head>  <body>  <div class="wrapper">  
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BANK*</title>
-    <link rel="stylesheet" href="MainPage.css">
-</head>
+    <!-- LEFT SIDE -->  
+    <div class="left-side">  
+        <div class="top-left-corner">  
+            <img src="IMAGES/bank.png" width="32px" height="32px" class="bank-image">  
+            <span id="bank-name"> BANK</span>  
+        </div>  
 
-<body>
+        <hr>  
 
-    <div class="wrapper">
+        <div class="Left-navbar">  
+            <div class="nth-bar"><a href="index.html">Log out</a></div>  
+            <div class="nth-bar"><a href="Account.html">Account</a></div>  
+            <div class="nth-bar"><a href="History.html">History</a></div>  
+            <div class="nth-bar" onclick="showWallet()">Wallet</div>  
+            <div class="nth-bar" onclick="showBallance()">Balance</div>  
+            <div class="nth-bar"><a href="transaction.Html">Transactions</a></div>  
+        </div>  
 
-        <!-- LEFT SIDE -->
-        <div class="left-side">
-            <div class="top-left-corner">
-                <img src="IMAGES/bank.png" width="32px" height="32px" class="bank-image">
-                <span id="bank-name"> *BANK*</span>
-            </div>
+        <hr>  
 
-            <hr>
+        <div class="Contact_us">  
+            <a href="#">Contact us</a>  
+        </div>  
+    </div>  
 
-            <div class="Left-navbar">
-                <div class="nth-bar"><a href="index.html">Log out</a></div>
-                <div class="nth-bar"><a href="Account.html">Account</a></div>
-                <div class="nth-bar"><a href="History.html">History</a></div>
-                <div class="nth-bar" onclick="showWallet()">Wallet</div>
-                <div class="nth-bar" onclick="showBallance()">Balance</div>
-                <div class="nth-bar"><a href="transaction.Html">Transactions</a></div>
-            </div>
+    <!-- CENTER -->  
+    <div class="center">  
+        <div class="center-box">  
+            <div class="box-amount">  
+                <div class="amount"></div>  
+            </div>  
 
-            <hr>
+            <div class="transaction-buttons">  
+                <button class="transaction-button" id="cash_out" onclick="PopupByCashOut()">Cash-out</button>  
+                <button class="transaction-button" id="cash_send" onclick="PopupByCashSend()">Cash-send</button>  
+            </div>  
+        </div>  
+    </div>  
 
-            <div class="Contact_us">
-                <a href="#">Contact us</a>
-            </div>
-        </div>
+    <!-- RIGHT SIDE -->  
+    <div class="right-side">  
+        <hr>  
 
-        <!-- CENTER -->
-        <div class="center">
-            <div class="center-box">
-                <div class="box-amount">
-                    <div class="amount"></div>
-                </div>
+        <div class="rside_user_info">  
+            <div class="user_info" id="user-id"><span>User-Id:</span><span class="get-info" id="get-id"></span>  
+            </div>  
+            <div class="user_info" id="user-email"><span>Email:</span><span class="get-info" id="get-email"></span>  
+            </div>  
+        </div>  
 
-                <div class="transaction-buttons">
-                    <button class="transaction-button" id="cash_out" onclick="PopupByCashOut()">Cash-out</button>
-                    <button class="transaction-button" id="cash_send" onclick="PopupByCashSend()">Cash-send</button>
-                </div>
-            </div>
-        </div>
+        <hr>  
 
-        <!-- RIGHT SIDE -->
-        <div class="right-side">
-            <hr>
+        <div class="rside_user_operations">  
+            <div class="rside_user_operations_title" onclick="clearOperations()">operations</div>  
 
-            <div class="rside_user_info">
-                <div class="user_info" id="user-id"><span>User-Id:</span><span class="get-info" id="get-id"></span>
-                </div>
-                <div class="user_info" id="user-email"><span>Email:</span><span class="get-info" id="get-email"></span>
-                </div>
-            </div>
+            <div class="rside_user_operations-box">  
+                <div class="operation">  
+                    <div class="operation-info">  
+                        <span class="users-operation-info" id="from-operation-info">majd-4536</span>  
+                        <span class="type-operation-info" id="cash_type">cash-send</span>  
+                        <span class="users-operation-info" id="to-operation-info">jad</span>  
+                    </div>  
+                    <div class="operation-info">  
+                        <span class="users-operation-info" id="date-operation-info">8-16-2025</span>  
+                        <span class="type-operation-info" id="operation_type">send</span>  
+                        <span class="users-operation-info" id="amount-operation-info">8.00$</span>  
+                    </div>  
+                </div>  
+            </div>  
 
-            <hr>
+        </div>  
+    </div>  
+</div>  
 
-            <div class="rside_user_operations">
-                <div class="rside_user_operations_title" onclick="clearOperations()">operations</div>
+<!-- POPUP 1 -->  
+<div class="popup" id="popup-id">  
+    <div class="popup-box">  
+        <label class="field" id="to-field">  
+            <span class="field-label">To</span>  
+            <input type="text" class="field-input" id="to-input" placeholder="User-Id">  
+        </label>  
 
-                <div class="rside_user_operations-box">
-                    <div class="operation glass-small">
-                        <div class="operation-info">
-                            <span class="users-operation-info" id="from-operation-info">majd-4536</span>
-                            <span class="type-operation-info" id="cash_type">cash-send</span>
-                            <span class="users-operation-info" id="to-operation-info">jad</span>
-                        </div>
-                        <div class="operation-info">
-                            <span class="users-operation-info" id="date-operation-info">8-16-2025</span>
-                            <span class="type-operation-info" id="operation_type">send</span>
-                            <span class="users-operation-info" id="amount-operation-info">8.00$</span>
-                        </div>
-                    </div>
-                </div>
+        <label class="field">  
+            <span class="field-label">Amount</span>  
+            <input type="number" class="field-input" id="amount-input" min="0.01" step="0.01" placeholder="0.00">  
+        </label>  
 
-            </div>
-        </div>
-    </div>
+        <div class="action">  
+            <button class="action-button" onclick="cancelPopup()">Cancel</button>  
+            <button class="action-button" onclick="confirmedOperation()">Confirm</button>  
+        </div>  
+    </div>  
+</div>  
 
-    <!-- POPUP 1 -->
-    <div class="popup" id="popup-id">
-        <div class="popup-box">
-            <label class="field" id="to-field">
-                <span class="field-label">To</span>
-                <input type="text" class="field-input" id="to-input" placeholder="User-Id">
-            </label>
+<!-- POPUP 2 -->  
+<div class="popup" id="popup-id-2">  
+    <div class="popup-box">  
+        <p id="wallet"></p>  
+        <div class="action">  
+            <button class="action-button" onclick="cancelPopup()">OK</button>  
+        </div>  
+    </div>  
+</div>  
 
-            <label class="field">
-                <span class="field-label">Amount</span>
-                <input type="number" class="field-input" id="amount-input" min="0.01" step="0.01" placeholder="0.00">
-            </label>
+<!-- POPUP 3 -->  
+<div class="popup" id="popup-id-3">  
+    <div class="popup-box">  
+        <div class="Balance-info">  
+            <div class="balance-info-row"><span class="B1" id="Spend"></span></div>  
+            <div class="balance-info-row"><span class="B1" id="Income"></span></div>  
+            <hr>  
+            <div class="balance-info-row">Your Balance: <span class="B1" id="Ba_lance"></span></div>  
+        </div>  
 
-            <div class="action">
-                <button class="action-button" onclick="cancelPopup()">Cancel</button>
-                <button class="action-button" onclick="confirmedOperation()">Confirm</button>
-            </div>
-        </div>
-    </div>
+        <div class="action">  
+            <button class="action-button" onclick="cancelPopup()">OK</button>  
+        </div>  
+    </div>  
+</div>  
 
-    <!-- POPUP 2 -->
-    <div class="popup" id="popup-id-2">
-        <div class="popup-box">
-            <p id="wallet"></p>
-            <div class="action">
-                <button class="action-button" onclick="cancelPopup()">OK</button>
-            </div>
-        </div>
-    </div>
+<script src="Main.js"></script>
 
-    <!-- POPUP 3 -->
-    <div class="popup" id="popup-id-3">
-        <div class="popup-box">
-            <div class="Balance-info">
-                <div class="balance-info-row"><span class="B1" id="Spend"></span></div>
-                <div class="balance-info-row"><span class="B1" id="Income"></span></div>
-                <hr>
-                <div class="balance-info-row">Your Balance: <span class="B1" id="Ba_lance"></span></div>
-            </div>
-
-            <div class="action">
-                <button class="action-button" onclick="cancelPopup()">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="Main.js"></script>
-</body>
-
-</html>
+</body>  </html>
