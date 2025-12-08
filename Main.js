@@ -164,7 +164,7 @@ function loadOperations(){
         DIVSData.forEach(Data => createOperation(Data.USER_ID,Data.cashType,Data.toinfo,Data.date,Data.type,Data.amount))
             
     }else{
-        document.querySelector(".rside_user_operations-box").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
+        //document.querySelector(".rside_user_operations-box").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
 
         
     }

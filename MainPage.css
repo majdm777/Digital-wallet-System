@@ -167,9 +167,33 @@ padding: 20px;
 border-left: 1px solid rgba(255, 255, 255, 0.25);
 }
 
+.rside_user_info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user_info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* allow items to wrap */
+    gap: 5px;
+}
+
 .user_info span {
-display: block;
-margin: 5px 0;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis; /* show "..." for long text */
+    white-space: nowrap;      /* keep in one line */
+}
+
+/* specifically shrink email span */
+#get-email {
+    max-width: 60%; /* adjust as needed */
+    font-size: 0.9rem; /* slightly smaller font */
+    color: #001230cc;
 }
 
 .rside_user_operations_title {
@@ -181,13 +205,89 @@ text-align: center;
 margin: 15px 0;
 }
 
-.operation {
-padding: 12px;
-background: rgba(255, 255, 255, 0.3);
-border-radius: 10px;
-margin-bottom: 12px;
-font-size: 0.9rem;
+.rside_user_operations-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* spacing between operations */
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 5px;
 }
+
+.operation {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+.operation:hover {
+    transform: translateY(-2px);
+}
+
+.operation-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #001230;
+}
+.operation-info span {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 33%; /* prevent long text from stretching box */
+}
+/* Color code sent vs received */
+.type-operation-info {
+    font-weight: bold;
+}
+
+.type-operation-info.send {
+    color: #e74c3c; /* red for sent */
+}
+
+.type-operation-info.received {
+    color: #27ae60; /* green for received */
+}
+
+/* Scrollbar style for operations box */
+.rside_user_operations-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 60vh; /* limit the height */
+    overflow-y: auto;  /* enable vertical scrolling */
+    padding-right: 5px; /* avoid scrollbar overlap */
+}
+.rside_user_operations-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rside_user_operations-box::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 48, 143, 0.6);
+    border-radius: 3px;
+}
+
+.rside_user_operations-box::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Optional: Empty state styling */
+.rside_user_operations-box .emptyMsge {
+    text-align: center;
+    color: #001230;
+    font-style: italic;
+    padding: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+}
+
 
 /* ========== MODERN POPUP REDESIGN ========== */
 .popup {
