@@ -38,7 +38,7 @@ if (empty($_SESSION['signup_verified']) || $_SESSION['signup_verified'] !== true
             
 
             <div class="row_inputs">
-                <div class="input"><div class="About_Input">First-Name</div>  <input  id="First-Name" type="text" class="info_inputs" required max="10" name="Frist-Name"></div>
+                <div class="input"><div class="About_Input">First-Name</div>  <input  id="First-Name" type="text" class="info_inputs" required max="10" name="First-Name"></div>
                 <div class="input"><div class="About_Input">Last-Name</div> <input  id="Last-Name" type="text" class="info_inputs" required maxlength="10" name="Last-Name"></div>
             </div>
 

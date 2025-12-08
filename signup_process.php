@@ -1,5 +1,11 @@
 <?php
 session_start();
+try {
+    $db = new mysqli('localhost','root','','wallet_tester');
+} catch (\Exception $e) {
+    // Die with a connection error message
+    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>"); 
+}
 
 // Simple processing for the final signup form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
@@ -14,6 +20,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
     $income = trim($_POST['Income-Source'] ?? '');
     $phone = trim($_POST['Phone'] ?? '');
     $type = trim($_POST['Type-Of-Account'] ?? '');
+    
+    //adding user to the data base
+    $query="INSERT INTO user 
+            (ID, FirstName, LastName, Email, Date_of_birth, Nationality, Address, Phone, Type_of_Account, Income_Source,password)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            die("Prepare failed: " . $db->error);
+        }
+
+        do{
+        $ID = random_int(10000, 99999);
+        $query1="SELECT ID FROM user WHERE ID=?";
+        $stat=$db->prepare($query1);
+            if(!$stat) {
+                die("Prepare failed: " . $db->error);
+            }
+        $stat->bind_param('i',$ID);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }        
+        $result=$stat->get_result();
+        }while($result->num_rows>0);
+
+
+
+
+
+
+
+
+        $passHashed=password_hash($password,PASSWORD_DEFAULT);
+        
+        $stmt->bind_param('issssssssss', $ID,$first, $last , $email,$dob,$nationality,$address,$phone,$type,$income,$passHashed);
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
+        
+
 
     // Persist user to a simple CSV file (users.csv) — replace with DB in production
     // $row = [
@@ -55,5 +102,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
 // If reached without POST, show a small message
 // (no output before header() calls above)
 // echo 'No submission detected.';
-
+$db->close();
 ?>
