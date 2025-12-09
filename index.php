@@ -3,13 +3,13 @@ session_start();
 
 $message = "";
 try {
-    $db = new mysqli('localhost', 'root', '', 'wallet_tester');
+    $db = new mysqli('localhost', 'root', '', 'wallet_db');
 } catch (\Exception $e) {
     // Die with a connection error message
     die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>");
 }
-$query1 = "SELECT Email FROM user WHERE Email=?";
-$query2 = "SELECT password FROM user WHERE Email=?";
+$query1 = "SELECT Email FROM users WHERE Email=?";
+$query2 = "SELECT Password FROM users WHERE Email=?";
 
 if (isset($_POST['LOGIN'])) {
     $email = $_POST['email'];
@@ -43,7 +43,7 @@ if (isset($_POST['LOGIN'])) {
             
             $stat1->bind_result($passHashedDb);
             $stat1->fetch();
-            if(!password_verify($password,$passHashedDb)){
+            if(password_verify($password,$passHashedDb)){
                 session_regenerate_id(true);
                 $_SESSION["userEmail"]=$email;
                 header("Location: Main.html");
