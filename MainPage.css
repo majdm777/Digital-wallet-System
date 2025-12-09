@@ -500,6 +500,7 @@ hr {
         max-height: 40vh; /* Limit height for scrollable operations */
         border-left: none;
         padding: 15px 20px;
+        overflow-y: auto;
     }
 
     .user_info span {
