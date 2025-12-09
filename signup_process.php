@@ -26,8 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
     $query="INSERT INTO users
             (user_id, FirstName, LastName, Email, Birthday, Nationality, Address, Phone, Type_Of_Account, Income_source,Password)
             VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-
+    $query2="INSERT INTO wallets (User_id) VALUES (?)";
         $stmt = $db->prepare($query);
+        $stmt1=$db->prepare($query2);
+
         if (!$stmt) {
             die("Prepare failed: " . $db->error);
         }
@@ -47,20 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
         }while($result->num_rows>0);
 
 
-
-
-
-
-
-
         $passHashed=password_hash($password,PASSWORD_DEFAULT);
         
         $stmt->bind_param('issssssssss', $ID,$first, $last , $email,$dob,$nationality,$address,$phone,$type,$income,$passHashed);
         if (!$stmt->execute()) {
             die("Execute failed: " . $stmt->error);
         }
-
+        $stmt1->bind_param('i',$ID);
         
+        if (!$stmt1->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }       
 
 
     // Persist user to a simple CSV file (users.csv) — replace with DB in production

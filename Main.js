@@ -2,24 +2,41 @@
 let USER_ID;
 let DIVSData = [];
 
-let Balance=localStorage.getItem("Balance")
+let Balance;
+//=localStorage.getItem("Balance")
+
+function send(action, extraData = {}) {
+    return fetch("Maindata.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ action, ...extraData })
+    })
+    .then(res => res.json());
+}
 function fillinfo(){
+    send("getuserinfo").then(Data =>{
+
+
+
     let input1=document.getElementById("get-id")
     let input2=document.getElementById("get-email");
     let input3=document.querySelector(".amount");
-    let input4=document.getElementById("wallet")
+    let input4=document.getElementById("wallet");
     
 
-    const Username=localStorage.getItem("First-Name")
-    const Userid=localStorage.getItem("User-Id");
-    const Useremail=localStorage.getItem("email");
-    USER_ID=Username+"-"+Userid;
+    // normalize returned keys (expect lowercase from server)
+    USER_ID = (Data.fname || Data.Fname) + "-" + (Data.id || Data.ID);
+
+    input1.innerText = USER_ID;
+    input2.innerText = Data.email || Data.Email || '';
+    input3.innerHTML = parseFloat(Data.balance || 0).toFixed(2) + "$";
+    input4.innerText = parseFloat(Data.balance || 0).toFixed(2) + "$";
+    // set global numeric Balance for later checks
+    Balance = parseFloat(Data.balance) || 0;
+    })
 
 
-    input1.innerText=USER_ID;
-    input2.innerText=Useremail;
-    input3.innerHTML=parseFloat(Balance).toFixed(2) + "$"
-    input4.innerText=parseFloat(Balance).toFixed(2) + "$"
+
 }
 //window.onload=fillinfo();
 function showWallet(){
@@ -72,7 +89,7 @@ function PopupByCashSend(){
 
 function PopupByCashOut(){
     popup=document.getElementById("popup-id")
-    popup.style.display="flex";
+    popup.dataset.type="cash-send";
     popup.dataset.type="Cash-Out"
     document.getElementById("to-field").style.display="none";
 }
@@ -80,7 +97,7 @@ function PopupByCashOut(){
 function confirmedOperation(){
     const amount=document.getElementById("amount-input").value
     const To=document.getElementById("to-input").value
-
+    popup.dataset.type="cash-out"
     let popup=document.getElementById("popup-id");
     const cashType= popup.dataset.type;
     const toinfo=document.getElementById("to-input").value
@@ -95,13 +112,19 @@ function confirmedOperation(){
     }
    }
 
-    if(parseFloat(Balance)<parseFloat(amount)){
+    // validate amount
+    if(!amount || parseFloat(amount) <= 0){
+        alert("you need to choose an amount")
+        return;
+    }
+
+    if(parseFloat(Balance) < parseFloat(amount)){
         alert("can not place this transaction EROR(0001)")
         cancelPopup();
         return;
     }
-    Balance=parseFloat(Balance)-parseFloat(amount)
-    localStorage.setItem("Balance",Balance)
+    Balance = parseFloat(Balance) - parseFloat(amount);
+    localStorage.setItem("Balance", Balance);
 
 
 
@@ -109,9 +132,11 @@ function confirmedOperation(){
 
 // check the type
     let type;
-    if(cashType==="CashSend"){
-        type="send";
-    }else type="received ";
+    if(String(cashType).toLowerCase().includes('send')){
+        type = "send";
+    } else {
+        type = "received";
+    }
 
     //check if there is a sufficient amount
     if(!amount || amount <=0){
@@ -133,25 +158,24 @@ function confirmedOperation(){
     // transaction_number++;
     // localStorage.setItem("NumberOfTransactions",transaction_number);
 
-    let TranNum=JSON.parse(localStorage.getItem("TranNum"))|| [0,0,0]
-    TranNum[0]++
-    TranNum[1]++
+    let TranNum = JSON.parse(localStorage.getItem("TranNum"))|| [0,0,0];
+    TranNum[0]++;
+    TranNum[1]++;
     TranNum[2]++;
-    let transaction_number=TranNum[0]
+    let transaction_number = TranNum[0];
 
     localStorage.setItem("TranNum", JSON.stringify(TranNum));
 
+    let transaction_code = GenerateGlobalTransactionCode();
 
+    const date = new Date().toLocaleDateString();
 
-    let transaction_code=GenerateGlobalTransactionCode();
-
-
-    const date= new Date().toLocaleDateString();
-
-    DIVSData.push({USER_ID,cashType,toinfo,date,type,amount,Balancee,transaction_code,transaction_number});
-    localStorage.setItem("operations",JSON.stringify(DIVSData));
-    location.reload();
-    createOperation(USER_ID,cashType,toinfo,date,type,amount);
+    DIVSData.push({USER_ID, cashType, toinfo, date, type, amount, Balancee, transaction_code, transaction_number});
+    localStorage.setItem("operations", JSON.stringify(DIVSData));
+    // create operation in DOM without reloading
+    createOperation(USER_ID, cashType, toinfo, date, type, amount);
+    // persist balance was already updated
+    return;
 
 
 
@@ -182,14 +206,14 @@ function createOperation(USER_ID,cashType,toinfo,date,type,amount){
     newOperation.classList.add("glass-small")
     newOperation.innerHTML=`
                     <div class="operation-info">
-                        <span class="users-operation-info" id="from-operation-info">${USER_ID}</span>
-                        <span class="type-operation-info" id="cash_type" >${cashType}</span>
-                        <span class="users-operation-info" id="to-operation-info">${toinfo}</span>
+                        <span class="users-operation-info from-operation-info">${USER_ID}</span>
+                        <span class="type-operation-info cash_type">${cashType}</span>
+                        <span class="users-operation-info to-operation-info">${toinfo}</span>
                     </div>
                     <div class="operation-info">
-                        <span class="users-operation-info" id="date-operation-info">${date}</span>
-                        <span class="type-operation-info" id="operation_type">${type}</span>
-                        <span class="users-operation-info" id="amount-operation-info">${parseFloat(amount).toFixed(2)}$</span>
+                        <span class="users-operation-info date-operation-info">${date}</span>
+                        <span class="type-operation-info operation_type">${type}</span>
+                        <span class="users-operation-info amount-operation-info">${parseFloat(amount).toFixed(2)}$</span>
                     </div>
 
     `
@@ -211,7 +235,7 @@ function clearOperations(){
 function GenerateGlobalTransactionCode(){
     const posCode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     let Code=""
-    for( i=0;i<12;i++){
+    for (let i=0;i<12;i++){
         Code += posCode.charAt(Math.floor(Math.random() * posCode.length));
     }
     return Code;

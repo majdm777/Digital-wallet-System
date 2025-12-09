@@ -45,7 +45,7 @@ if (isset($_POST['LOGIN'])) {
             $stat1->fetch();
             if(password_verify($password,$passHashedDb)){
                 session_regenerate_id(true);
-                $_SESSION["userEmail"]=$email;
+                $_SESSION["signup_email"]=$email;
                 header("Location: Main.html");
                 exit();
             }else{
