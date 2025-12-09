@@ -1,14 +1,13 @@
 <?php
 session_start();
-
 try {
-    $db = new mysqli('localhost','root','','wallet_tester');
+    $db = new mysqli('localhost','root','','wallet_db');
 } catch (\Exception $e) {
     // Die with a connection error message
     die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>"); 
 }
 
-$query1="SELECT Email FROM user WHERE Email=?";
+$query1="SELECT Email FROM users WHERE Email=?";
 
 $message = '';
 $show_verification_form = false; // Track if we should show the verification form
@@ -34,9 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             die("Execute failed: " . $stmt->error);
         }
         
-        $result = $stmt->get_result();
+        $stmt->store_result();
 
-        if ($result && $result->num_rows == 0) {
+        if ($stmt->num_rows === 0) {
         // Email does not exist — generate a 6-digit code and store it in session
             $code = random_int(100000, 999999);
             $_SESSION['signup_email'] = $email;
@@ -68,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 // Handle verification form submit (code entry)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
     $entered = trim($_POST['VerCode'] ?? '');
+   
     if (!empty($_SESSION['signup_code']) && $entered === $_SESSION['signup_code']) {
         $_SESSION['signup_verified'] = true;
         unset($_SESSION['code_generated']); // Clear the flag
@@ -97,7 +97,6 @@ $db->close();
                     <h3 class="LOGIN">SIGN UP</h3>
 
                     <h4>We will send a verification code to your email. Please check your inbox.</h4>
-
                     <?php if ($message): ?>
                         <div style="color: #333; padding: 8px;"><?php echo htmlspecialchars($message); ?></div>
                     <?php endif; ?>
