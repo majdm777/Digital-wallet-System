@@ -1,6 +1,13 @@
 <?php 
 $message = "";
 $success_message = "";
+try {
+    $db = new mysqli('localhost', 'root', '', 'wallet_db');
+} catch (\Exception $e) {
+    // Die with a connection error message
+    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>");
+}
+$query1 = "SELECT Email FROM users WHERE Email=?";
 
 if(isset($_POST['send'])){
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
@@ -12,8 +19,18 @@ if(isset($_POST['send'])){
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
             $message = "Invalid email format";
         } else {
+
+            $stat = $db->prepare($query1);
+        if (!$stat) {
+            die("Prepare failed: " . $db->error);
+        }
+        $stat->bind_param('s', $email);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }
+        $result = $stat->get_result();
             // Check if email exists (replace with your actual validation)
-            if($email == "majdmaatouk@gmail.com" || $email == "majdmaatouk@email.com"){
+            if($result->num_rows == 1){
                 // Email exists - send reset link or show success message
                 // TODO: Implement actual password reset email sending here
                 $success_message = "Password reset link has been sent to your email";
