@@ -1,7 +1,8 @@
 <?php
 session_start();
+
 try {
-    $db = new mysqli('localhost','root','','wallet_tester');
+    $db = new mysqli('localhost','root','','wallet_db');
 } catch (\Exception $e) {
     // Die with a connection error message
     die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>"); 
@@ -22,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
     $type = trim($_POST['Type-Of-Account'] ?? '');
     
     //adding user to the data base
-    $query="INSERT INTO user 
-            (ID, FirstName, LastName, Email, Date_of_birth, Nationality, Address, Phone, Type_of_Account, Income_Source,password)
+    $query="INSERT INTO users
+            (user_id, FirstName, LastName, Email, Birthday, Nationality, Address, Phone, Type_Of_Account, Income_source,Password)
             VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
         $stmt = $db->prepare($query);
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit3'])) {
 
         do{
         $ID = random_int(10000, 99999);
-        $query1="SELECT ID FROM user WHERE ID=?";
+        $query1="SELECT user_id FROM users WHERE user_id=?";
         $stat=$db->prepare($query1);
             if(!$stat) {
                 die("Prepare failed: " . $db->error);
