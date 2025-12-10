@@ -54,6 +54,8 @@ if (isset($_POST['LOGIN'])) {
 
 
             
+        }else{
+                $message = "Invalid email or password";
         }
 
     }

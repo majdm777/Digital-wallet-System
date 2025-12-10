@@ -37,9 +37,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             'balance' => $balance,
             'walletid' => $walletid
         ]);
-        exit;
-
-       
+        exit;    
     }
 
 
