@@ -22,6 +22,8 @@ function fillinfo(){
     let input2=document.getElementById("get-email");
     let input3=document.querySelector(".amount");
     let input4=document.getElementById("wallet");
+    let input5=document.getElementById("Spend");
+
     
 
     // normalize returned keys (expect lowercase from server)
@@ -31,6 +33,7 @@ function fillinfo(){
     input2.innerText = Data.email || Data.Email || '';
     input3.innerHTML = parseFloat(Data.balance || 0).toFixed(2) + "$";
     input4.innerText = parseFloat(Data.balance || 0).toFixed(2) + "$";
+    input5.innerHTML = "-" + parseFloat(Data.spend || 0).toFixed(2) + "$";
     // set global numeric Balance for later checks
     Balance = parseFloat(Data.balance) || 0;
     })
@@ -42,28 +45,30 @@ function fillinfo(){
 function showWallet(){
     document.getElementById("popup-id-2").style.display="flex"
 }
-function showBallance(){
-    document.getElementById("popup-id-3").style.display="flex"
-    // let spend=localStorage.getItem("Spend") || 0;
-
-    let spent=JSON.parse(localStorage.getItem("spent"))|| [0,0,0];
-    let received=JSON.parse(localStorage.getItem("received"))|| [0,0,0];
-
-
-    // let Income=localStorage.getItem("InCome")|| 0;
-    document.getElementById("Spend").innerHTML="-"+parseFloat(spent[1]).toFixed(2)+"$"
-    document.getElementById("Income").innerHTML="+"+parseFloat(received[1]).toFixed(2)+"$"
-    let Balance = parseFloat(received[1]).toFixed(2) - parseFloat(spent[1]).toFixed(2)
-    let cal = document.getElementById("Ba_lance")
-    if(Balance >=0){
-        cal.style.color="green"
-        cal.innerHTML="+"+parseFloat(Balance).toFixed(3)+"$"
+function showBallance() { 
+     document.getElementById("popup-id-3").style.display = "flex";
     
-    }else{
-        cal.style.color="red"
-        cal.innerHTML=parseFloat(Balance).toFixed(3)+"$"
-    }
+    
+    send("getBalance").then(Data => {
+        let totalSpent = parseFloat(Data.total_spent) ;
+        let totalReceived = parseFloat(Data.total_received);
+        let Balance = totalReceived - totalSpent;
+        // alert("::"+totalSpent);
+        // Update UI
+        document.getElementById("Spend").innerHTML = "-" + totalSpent.toFixed(2) + "$";
+        document.getElementById("Income").innerHTML = "+" + totalReceived.toFixed(2) + "$";
 
+            let cal = document.getElementById("Ba_lance");
+        if (Balance >= 0) {
+            cal.style.color = "green";
+            cal.innerHTML = "+" + Balance.toFixed(2) + "$";
+        } else {
+            cal.style.color = "red";
+            cal.innerHTML = Balance.toFixed(2) + "$";
+        }
+
+
+    });
 
 }
  
@@ -84,14 +89,16 @@ function PopupByCashSend(){
     popup.dataset.type="Cash-Send";
     document.getElementById("to-field").style.display="flex";
     popup.style.display="flex";
+    
 
 }
 
 function PopupByCashOut(){
-    popup=document.getElementById("popup-id")
-    popup.dataset.type="cash-send";
-    popup.dataset.type="Cash-Out"
-    document.getElementById("to-field").style.display="none";
+    // popup=document.getElementById("popup-id")
+    // popup.dataset.type="Cash-Send";
+    // document.getElementById("to-field").style.display="flex";
+    // popup.style.display="flex";
+    //
 }
 
 function confirmedOperation(){

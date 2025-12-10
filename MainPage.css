@@ -563,7 +563,9 @@ hr {
 }
 
 
-
+.to-input{
+    display: block;
+}
 .rside_user_operations-box::-webkit-scrollbar {
 
     width: 6px;

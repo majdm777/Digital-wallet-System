@@ -60,6 +60,7 @@ CREATE TABLE transfers (
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
+    Type ENUM("send","received") NOT NULL,
     -- description VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sender_id) REFERENCES users(user_id),
