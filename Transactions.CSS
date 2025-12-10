@@ -113,7 +113,7 @@ hr {
 /* Empty message */
 .emptymsge {
     font-size: 150%;
-    color: white;
+    color: #00235e;
     text-shadow: 0 0 10px rgba(255,255,255,0.5);
     opacity: 0.75;
 }
@@ -188,6 +188,7 @@ hr {
     justify-content: center;
     padding-top: 1%;
     overflow: hidden;
+    font-size: 80%;
 }
 
 /* ===== BALANCE ===== */
@@ -196,7 +197,6 @@ hr {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 21vh;
 }
 
 .Tran-Balance {
