@@ -22,7 +22,7 @@ function fillinfo(){
     let input2=document.getElementById("get-email");
     let input3=document.querySelector(".amount");
     let input4=document.getElementById("wallet");
-    let input5=document.getElementById("Spend");
+    // let input5=document.getElementById("Spend");
 
     
 
@@ -33,7 +33,8 @@ function fillinfo(){
     input2.innerText = Data.email || Data.Email || '';
     input3.innerHTML = parseFloat(Data.balance || 0).toFixed(2) + "$";
     input4.innerText = parseFloat(Data.balance || 0).toFixed(2) + "$";
-    input5.innerHTML = "-" + parseFloat(Data.spend || 0).toFixed(2) + "$";
+    document.getElementById("Spend").innerHTML = "-" + parseFloat(Data.spend || 0).toFixed(2) + "$";
+    // input5.innerHTML = "-" + parseFloat(Data.balance || 0).toFixed(2) + "$";
     // set global numeric Balance for later checks
     Balance = parseFloat(Data.balance) || 0;
     })
@@ -50,22 +51,22 @@ function showBallance() {
     
     
     send("getBalance").then(Data => {
-        let totalSpent = parseFloat(Data.total_spent) ;
-        let totalReceived = parseFloat(Data.total_received);
-        let Balance = totalReceived - totalSpent;
+        let totalSpent = parseFloat(Data.spend)*(-1.00) || 100 ;
+        let totalReceived = parseFloat(Data.received);
+         
         // alert("::"+totalSpent);
         // Update UI
-        document.getElementById("Spend").innerHTML = "-" + totalSpent.toFixed(2) + "$";
-        document.getElementById("Income").innerHTML = "+" + totalReceived.toFixed(2) + "$";
-
-            let cal = document.getElementById("Ba_lance");
+        document.getElementById("Spend").innerHTML = "" + totalSpent.toFixed(2) + "$" ;
+        document.getElementById("Income").innerHTML = "+" +  totalReceived.toFixed(2) + "$";
+        let Balance = totalSpent + totalReceived;
+        let cal = document.getElementById("Ba_lance");
         if (Balance >= 0) {
             cal.style.color = "green";
             cal.innerHTML = "+" + Balance.toFixed(2) + "$";
         } else {
             cal.style.color = "red";
             cal.innerHTML = Balance.toFixed(2) + "$";
-        }
+           }
 
 
     });

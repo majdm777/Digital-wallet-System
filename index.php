@@ -10,7 +10,7 @@ try {
 }
 $query1 = "SELECT Email FROM users WHERE Email=?";
 $query2 = "SELECT Password FROM users WHERE Email=?";
-
+$query3 = "SELECT user_id FROM users WHERE Email=?";
 if (isset($_POST['LOGIN'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -43,9 +43,18 @@ if (isset($_POST['LOGIN'])) {
             
             $stat1->bind_result($passHashedDb);
             $stat1->fetch();
+            $stat1->free_result();
+
+            $stat2=$db->prepare($query3);
+            $stat2->bind_param('s',$email);
+            $stat2->execute();
+            $stat2->bind_result($userId);
+            $stat2->fetch();
+
             if(password_verify($password,$passHashedDb)){
                 session_regenerate_id(true);
                 $_SESSION["signup_email"]=$email;
+                $_SESSION["userID"]=$userId ?? 0;
                 header("Location: Main.html");
                 exit();
             }else{
