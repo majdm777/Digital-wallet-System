@@ -62,7 +62,8 @@ transactionSearch.addEventListener("input", (e) => {
   const searchTerm = e.target.value.toLowerCase()
   filterTransactions(searchTerm)
 })
-
+//using the fetch api to send requests to admin.php, it adds the action parameter to the url
+//action=search
 async function handleSearch() {
   const userId = userIdSearch.value.trim().toUpperCase()
 
@@ -190,6 +191,8 @@ deleteCancelBtn.addEventListener("click", () => {
   deleteModal.classList.remove("active")
 })
 
+//This is used when the admin confirms a user deletion.
+// It's in the event listener for the deleteConfirmBtn.
 deleteConfirmBtn.addEventListener("click", async () => {
   const reason = deleteReason.value.trim()
 
@@ -239,6 +242,8 @@ suspendCancelBtn.addEventListener("click", () => {
   suspendModal.classList.remove("active")
 })
 
+//This is used when the admin confirms a user suspension.
+// It's in the event listener for the suspendConfirmBtn.
 suspendConfirmBtn.addEventListener("click", async () => {
   const reason = suspendReason.value.trim()
   const duration = suspendDuration.value.trim()
@@ -292,6 +297,8 @@ addCancelBtn.addEventListener("click", () => {
   addModal.classList.remove("active")
 })
 
+//This is used when the admin adds funds to a user's account.
+//  It's in the event listener for the addConfirmBtn
 addConfirmBtn.addEventListener("click", async () => {
   const amount = Number.parseFloat(addAmount.value)
 

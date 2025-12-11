@@ -2,9 +2,9 @@
 
 
 $host = 'localhost';
-$dbname = 'digital_wallet';
+$dbname = 'mirna_db';
 $username = 'root';
-$password = '';
+$password = 'NewPassword123!';
 
 $conn = null;
 
@@ -12,122 +12,156 @@ try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
-    // Connection failed - will use mock data
+    // If connection fails, stop and return a JSON error.
+    header('Content-Type: application/json');
+    http_response_code(500); // Internal Server Error
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    exit;
 }
 
 // Handle AJAX requests
 if (isset($_GET['action'])) {
     header('Content-Type: application/json');
     
-    // Mock data for testing
-    $mockUsers = [
-        'USER001' => [
-            'id' => 'USER001',
-            'name' => 'John Doe',
-            'balance' => '2500.00',
-            'transactions' => [
-                ['id' => 'TXN001', 'date' => '2024-01-15 14:30:00', 'description' => 'Deposit', 'amount' => '500.00', 'type' => 'credit'],
-                ['id' => 'TXN002', 'date' => '2024-01-14 10:15:00', 'description' => 'Purchase at Store', 'amount' => '-150.50', 'type' => 'debit'],
-                ['id' => 'TXN003', 'date' => '2024-01-13 16:45:00', 'description' => 'Refund', 'amount' => '75.25', 'type' => 'credit'],
-            ]
-        ],
-        'USER002' => [
-            'id' => 'USER002',
-            'name' => 'Jane Smith',
-            'balance' => '5750.75',
-            'transactions' => [
-                ['id' => 'TXN004', 'date' => '2024-01-16 09:20:00', 'description' => 'Salary Deposit', 'amount' => '3000.00', 'type' => 'credit'],
-                ['id' => 'TXN005', 'date' => '2024-01-15 18:30:00', 'description' => 'Online Payment', 'amount' => '-200.00', 'type' => 'debit'],
-            ]
-        ],
-        'USER003' => [
-            'id' => 'USER003',
-            'name' => 'Bob Johnson',
-            'balance' => '1250.50',
-            'transactions' => [
-                ['id' => 'TXN006', 'date' => '2024-01-17 12:00:00', 'description' => 'Transfer In', 'amount' => '500.00', 'type' => 'credit'],
-                ['id' => 'TXN007', 'date' => '2024-01-16 15:30:00', 'description' => 'ATM Withdrawal', 'amount' => '-100.00', 'type' => 'debit'],
-                ['id' => 'TXN008', 'date' => '2024-01-15 11:20:00', 'description' => 'Bill Payment', 'amount' => '-250.00', 'type' => 'debit'],
-            ]
-        ]
-    ];
-    
     if ($_GET['action'] === 'search' && isset($_GET['userId'])) {
         $userId = $_GET['userId'];
-        $found = false;
         
-        if ($conn) {
-            try {
-                // Get user info
-                $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
+        try {
+            // Get user info
+            $stmt = $conn->prepare("SELECT user_id, name, balance, status FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user) {
+                // Get transactions
+                $stmt = $conn->prepare("SELECT transaction_id, transaction_date, description, amount, type FROM transactions WHERE user_id = ? ORDER BY transaction_date DESC");
                 $stmt->execute([$userId]);
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
-                if ($user) {
-                    // Get transactions
-                    $stmt = $conn->prepare("SELECT * FROM transactions WHERE user_id = ? ORDER BY transaction_date DESC");
-                    $stmt->execute([$userId]);
-                    $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    echo json_encode([
-                        'success' => true,
-                        'user' => [
-                            'id' => $user['user_id'],
-                            'name' => $user['name'],
-                            'balance' => $user['balance']
-                        ],
-                        'transactions' => array_map(function($t) {
-                            return [
-                                'id' => $t['transaction_id'],
-                                'date' => $t['transaction_date'],
-                                'description' => $t['description'],
-                                'amount' => $t['amount'],
-                                'type' => $t['type']
-                            ];
-                        }, $transactions)
-                    ]);
-                    $found = true;
-                }
-            } catch(PDOException $e) {
-                // Database connection or query failed, will use mock data
-            }
-        }
-        
-        // Use mock data if database fails or user not found
-        if (!$found) {
-            if (isset($mockUsers[$userId])) {
                 echo json_encode([
                     'success' => true,
                     'user' => [
-                        'id' => $mockUsers[$userId]['id'],
-                        'name' => $mockUsers[$userId]['name'],
-                        'balance' => $mockUsers[$userId]['balance']
+                        'id' => $user['user_id'],
+                        'name' => $user['name'],
+                        'balance' => $user['balance'],
+                        'status' => $user['status']
                     ],
-                    'transactions' => $mockUsers[$userId]['transactions']
+                    'transactions' => array_map(function($t) {
+                        return [
+                            'id' => $t['transaction_id'],
+                            'date' => $t['transaction_date'],
+                            'description' => $t['description'],
+                            'amount' => $t['amount'],
+                            'type' => $t['type']
+                        ];
+                    }, $transactions)
                 ]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'User not found']);
             }
+        } catch(PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'A database error occurred while searching.']);
         }
         exit;
     }
     
     if ($_GET['action'] === 'delete') {
         $data = json_decode(file_get_contents('php://input'), true);
-        echo json_encode(['success' => true, 'message' => 'User deleted successfully']);
+        $userId = $data['userId'] ?? null;
+
+        if (!$userId) {
+            http_response_code(400); // Bad Request
+            echo json_encode(['success' => false, 'message' => 'User ID is required.']);
+            exit;
+        }
+
+        try {
+            $conn->beginTransaction();
+
+            // It's good practice to delete related records first
+            $stmt = $conn->prepare("DELETE FROM transactions WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            // Then delete the user
+            $stmt = $conn->prepare("DELETE FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            $conn->commit();
+
+            echo json_encode(['success' => true, 'message' => 'User deleted successfully']);
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to delete user.']);
+        }
         exit;
     }
     
     if ($_GET['action'] === 'suspend') {
         $data = json_decode(file_get_contents('php://input'), true);
-        echo json_encode(['success' => true, 'message' => 'User suspended successfully']);
+        $userId = $data['userId'] ?? null;
+        // We can also log the reason and duration if we had columns for them
+
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'User ID is required.']);
+            exit;
+        }
+
+        try {
+            // Assuming your 'users' table has a 'status' column (e.g., ENUM 'active', 'suspended', 'deleted')
+            $stmt = $conn->prepare("UPDATE users SET status = 'suspended' WHERE user_id = ?");
+            $stmt->execute([$userId]);
+
+            if ($stmt->rowCount() > 0) {
+                echo json_encode(['success' => true, 'message' => 'User suspended successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'User not found or already suspended.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to suspend user.']);
+        }
         exit;
     }
     
     if ($_GET['action'] === 'addFunds') {
         $data = json_decode(file_get_contents('php://input'), true);
-        $newBalance = 3000.00; // Mock new balance
-        echo json_encode(['success' => true, 'newBalance' => number_format($newBalance, 2, '.', '')]);
+        $userId = $data['userId'] ?? null;
+        $amount = $data['amount'] ?? 0;
+
+        if (!$userId || !is_numeric($amount) || $amount <= 0) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Valid User ID and positive amount are required.']);
+            exit;
+        }
+
+        try {
+            $conn->beginTransaction();
+
+            // 1. Update user's balance
+            $stmt = $conn->prepare("UPDATE users SET balance = balance + ? WHERE user_id = ?");
+            $stmt->execute([$amount, $userId]);
+
+            // 2. Get the new balance
+            $stmt = $conn->prepare("SELECT balance FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $newBalance = $stmt->fetchColumn();
+
+            // 3. Create a new transaction record
+            $transactionId = 'TXN' . strtoupper(uniqid());
+            $stmt = $conn->prepare("INSERT INTO transactions (transaction_id, user_id, type, amount, description) VALUES (?, ?, 'credit', ?, 'Admin Deposit')");
+            $stmt->execute([$transactionId, $userId, $amount]);
+
+            $conn->commit();
+
+            echo json_encode(['success' => true, 'newBalance' => number_format($newBalance, 2, '.', '')]);
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to add funds.']);
+        }
         exit;
     }
 }
