@@ -2,9 +2,9 @@
 
 
 $host = 'localhost';
-$dbname = 'mirna_db';
+$dbname = 'wallet_db';
 $username = 'root';
-$password = 'NewPassword123!';
+$password = '';
 
 $conn = null;
 
