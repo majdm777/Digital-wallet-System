@@ -6,8 +6,7 @@ USE wallet_db;
 -- Table: super_admins
 -- =========================
 CREATE TABLE IF NOT EXISTS admins (
-    admin_id INT,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -20,6 +19,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS manager (
     manager_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -56,18 +56,19 @@ CREATE TABLE IF NOT EXISTS wallets (
 );
 
 CREATE TABLE transfers (
-    transfer_id INT AUTO_INCREMENT PRIMARY KEY,
+    transfer_id INT NOT NULL PRIMARY KEY,
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
-    Type ENUM("send","received") NOT NULL,
+    Status ENUM("send","received","undefined") NOT NULL DEFAULT "undefined",
+    Operation ENUM("Cash-Send","Cash-Out","Deposit","undefined") NOT NULL DEFAULT "undefined",
     -- description VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sender_id) REFERENCES users(user_id),
     FOREIGN KEY (receiver_id) REFERENCES users(user_id)
 );
-
-CREATE TABLE deposits (
+ 
+CREATE TABLE deposits ( --fawwet masare
     deposit_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
@@ -76,15 +77,102 @@ CREATE TABLE deposits (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (User_id) REFERENCES user(user_id)
 );
-CREATE TABLE withdrawals (
+CREATE TABLE withdrawals ( --es7ab masare
     withdrawal_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
     description VARCHAR(255),
-    status ENUM('pending','accepted','rejected') DEFAULT 'pending',
+    status ENUM('pending','handled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (User-id) REFERENCES users(user_id)
+    FOREIGN KEY (User-id) REFERENCES users(user_id)\
+
 );
+----------------------------------------------------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE FUNCTION CheckUserExists(email VARCHAR(150))
+RETURNS BOOLEAN
+DETERMINISTIC
+BEGIN
+    DECLARE existsFlag BOOLEAN;
+
+    SELECT (COUNT(*) > 0) INTO existsFlag
+    FROM users
+    WHERE Email = email;
+
+    RETURN existsFlag;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE FUNCTION CheckUserExists(user_ID VARCHAR(150))
+RETURNS BOOLEAN
+DETERMINISTIC
+BEGIN
+    DECLARE existsFlag BOOLEAN;
+
+    SELECT (COUNT(*) > 0) INTO existsFlag
+    FROM users
+    WHERE user_id = user_ID;
+
+    RETURN existsFlag;
+END $$
+
+DELIMITER ;
+
+
+
+DELimITER$$
+
+CREATE FUNCTION GetPassword(user_Email VARCHAR(150))
+RETURNS VARCHAR(255)
+DETERMINISTIC
+BEGIN
+    DECLARE pass VARCHAR(255);
+
+    SELECT password INTO pass
+    FROM users
+    WHERE Email=user_Email;
+
+    RETURN pass;
+END $$
+
+DELIMITER ;
+
+
+
+
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertNewUser(
+    IN p_user_id INT,
+    IN p_FirstName VARCHAR(100),
+    IN p_LastName VARCHAR(100),
+    IN p_Email VARCHAR(150),
+    IN p_Password VARCHAR(255),
+    IN p_Nationality VARCHAR(255),
+    IN p_Birthday DATE,
+    IN p_Phone VARCHAR(50),
+    IN p_Income_source VARCHAR(100),
+    IN p_Type_Of_Account VARCHAR(255),
+    IN p_Address VARCHAR(254)
+)
+BEGIN
+    INSERT INTO users(user_id, FirstName, LastName, Email, Password, Nationality, Birthday, Phone, Income_source, Type_Of_Account, Address)
+    VALUES (p_user_id, p_FirstName, p_LastName, p_Email, p_Password, p_Nationality, p_Birthday, p_Phone, p_Income_source, p_Type_Of_Account, p_Address);
+
+    INSERT INTO wallets(user_id)
+    VALUES (p_user_id);
+END $$
+
+DELIMITER ;
+
+
 
 -- =====================================================
 -- PROCEDURE: transfer_money

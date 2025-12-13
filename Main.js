@@ -33,7 +33,7 @@ function fillinfo(){
     input2.innerText = Data.email || Data.Email || '';
     input3.innerHTML = parseFloat(Data.balance || 0).toFixed(2) + "$";
     input4.innerText = parseFloat(Data.balance || 0).toFixed(2) + "$";
-    document.getElementById("Spend").innerHTML = "-" + parseFloat(Data.spend || 0).toFixed(2) + "$";
+    // document.getElementById("Spend").innerHTML = "-" + parseFloat(Data.spend || 0).toFixed(2) + "$";
     // input5.innerHTML = "-" + parseFloat(Data.balance || 0).toFixed(2) + "$";
     // set global numeric Balance for later checks
     Balance = parseFloat(Data.balance) || 0;
