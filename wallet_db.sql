@@ -262,38 +262,45 @@ DELIMITER
 
 DELIMITER $$
 
+DELIMITER $$
+
 CREATE PROCEDURE CashOut(
-    IN user_id INT,
-    IN Amount DECIMAL(15,2)
+    IN p_user_id INT,
+    IN p_amount DECIMAL(15,2),
+    OUT p_success BOOLEAN
 )
 BEGIN
     DECLARE sender_balance DECIMAL(15,2);
 
-    
+    SET p_success = FALSE;
 
     START TRANSACTION;
 
-    -- Lock sender wallet
+    -- Lock wallet row
     SELECT balance
     INTO sender_balance
     FROM wallets
-    WHERE User_id = user_id
+    WHERE User_id = p_user_id
     FOR UPDATE;
-    IF sender_balance >=Amount THEN
 
+    IF sender_balance >= p_amount THEN
 
-        INSERt INTO deposit(User_id,amount,status) VALUES(user_id,Amount,"pending");
+        INSERT INTO withdrawals (User_id, amount, status)
+        VALUES (p_user_id, p_amount, 'pending');
 
+        UPDATE wallets
+        SET balance = balance - p_amount
+        WHERE User_id = p_user_id;
 
-        UPDATE wallets SET balance= balance - Amount WHERE User_id=user_id;
-        commit;
-    ELSE 
-        ROLLBACK
+        COMMIT;
+        SET p_success = TRUE;
+    ELSE
+        ROLLBACK;
     END IF;
+
 END$$
-DELIMITER
 
-
+DELIMITER ;
 -- -- =====================================================
 -- -- PROCEDURE: request_deposit
 -- -- Description: Creates a pending deposit request for admin approval.
