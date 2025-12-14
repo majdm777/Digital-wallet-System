@@ -8,7 +8,7 @@ try {
     // Die with a connection error message
     die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>");
 }
-$query1 = "SELECT  CheckUserExists(?)";
+$query1 = "SELECT  CheckUserEmailExists(?)";
 $query2 = "SELECT Password FROM users WHERE Email=?";
 $query3 = "SELECT user_id FROM users WHERE Email=?";
 if (isset($_POST['LOGIN'])) {

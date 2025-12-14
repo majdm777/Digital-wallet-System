@@ -13,7 +13,7 @@ function send(action, extraData = {}) {
     })
     .then(res => res.json());
 }
-function fillinfo(){
+function fillinfo(){// review after finishing the database
     send("getuserinfo").then(Data =>{
 
 
@@ -103,52 +103,77 @@ function PopupByCashOut(){
 }
 
 //god help me 
-function CheckUserValidity(){
-    const amount=document.getElementById("amount-input").value
-    const receiver=document.getElementById("to-input").value
-    const money=parseFloat(amount);
-    let type="";
-    // alert(money);
-    // alert(receiver);
-    if(isNaN(money) || money <=0){
+function CheckUserValidity() {
+    const amount = document.getElementById("amount-input").value;
+    const receiver = document.getElementById("to-input").value.trim();
+    const money = parseFloat(amount);
+
+    if (isNaN(money) || money <= 0) {
         alert("Invalid Amount");
         return;
     }
-    send("CheckBalance",{money}).then(res =>{
-        if(!res.approved){
-            alert("Insufficient Amount")
-            return;
-        }
-    })
 
-
-
-
-    if(receiver!=="" ){
-        send("receiverExistence",{receiver}).then(res=>{
-            if(res.exist==-1){
-                alert("user not found");
-                return;
-            }
-            if(res.exist==0){
-                alert("you cant send money to yourself");
-                return;
-            }
-        }).catch(err => console.error(err));
-        type="cash-send";
-    }else{
-        
+    // CASE 1: cash-out (receiver empty)
+    if (receiver === "") {
+        send("CheckBalance", { money })
+            .then(res => {
+                if (!res.approved) {
+                    alert("Insufficient Amount");
+                    return;
+                }
+                placeCashOut(money);
+                cancelPopup();
+            });
+        return;
     }
-    
-    cancelPopup();
-    return;
-    
+
+    // CASE 2: cash-send
+    send("CheckBalance", { money })
+        .then(res => {
+            if (!res.approved) {
+                alert("Insufficient Amount");
+                throw "stop";
+            }
+            return send("receiverExistence", { receiver });
+        })
+        .then(res => {
+            if (res.exist === -1) {
+                alert("user not found");
+                throw "stop";
+            }
+            if (res.exist === 0) {
+                alert("you cant send money to yourself");
+                throw "stop";
+            }
+            
+            
+            placetransaction("Cash-Send", receiver, money);
+            cancelPopup();
+        })
+        .catch(() => {});
 }
+
 
 //=================================================================== check point =================================================================== //
 
 
+function placetransaction(Type,receiver,amount){ //function transfering money . review after finishing the database
+    
+    let transaction_code = parseInt(GenerateGlobalTransactionCode());
+    send("transferMoney",{"transaction_code":transaction_code,"type":Type,'receiver_id':receiver,'amount':amount}).then(res =>{
 
+        alert(res.comment);
+        return
+    })
+    
+}
+
+function placeCashOut(amount){
+    send("CashOut",{ "amount":amount}).then(majd =>{
+        alert(majd.comment);
+        return;
+    })
+}
 
 
 
@@ -303,9 +328,9 @@ function clearOperations(){
 }
 
 function GenerateGlobalTransactionCode(){
-    const posCode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    const posCode="0123456789"
     let Code=""
-    for (let i=0;i<12;i++){
+    for (let i=0;i<9;i++){
         Code += posCode.charAt(Math.floor(Math.random() * posCode.length));
     }
     return Code;
