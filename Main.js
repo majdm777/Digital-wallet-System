@@ -95,99 +95,157 @@ function PopupByCashSend(){
 }
 
 function PopupByCashOut(){
-    // popup=document.getElementById("popup-id")
-    // popup.dataset.type="Cash-Send";
-    // document.getElementById("to-field").style.display="flex";
-    // popup.style.display="flex";
-    //
-}
+    popup=document.getElementById("popup-id")
+    popup.dataset.type="Cash-Send";
+    document.getElementById("to-field").style.display="none";
 
-function confirmedOperation(){
+    popup.style.display="flex";
+}
+//=================================================================== check point =================================================================== //
+
+//god help me 
+function CheckUserValidity(){
     const amount=document.getElementById("amount-input").value
-    const To=document.getElementById("to-input").value
-    popup.dataset.type="cash-out"
-    let popup=document.getElementById("popup-id");
-    const cashType= popup.dataset.type;
-    const toinfo=document.getElementById("to-input").value
-    // const User_iD=localStorage.getItem("User-ID");
-
-
-   if(To){
-     if(To!=="majd-9829" && To!=="name-1212" ){
-        alert("User Not Found")
-        // cancelPopup();
+    const receiver=document.getElementById("to-input").value
+    const money=parseFloat(amount);
+    let type="";
+    // alert(money);
+    // alert(receiver);
+    if(isNaN(money) || money <=0){
+        alert("Invalid Amount");
         return;
     }
-   }
+    send("CheckBalance",{money}).then(res =>{
+        if(!res.approved){
+            alert("Insufficient Amount")
+            return;
+        }
+    })
 
-    // validate amount
-    if(!amount || parseFloat(amount) <= 0){
-        alert("you need to choose an amount")
-        return;
+
+
+
+    if(receiver!=="" ){
+        send("receiverExistence",{receiver}).then(res=>{
+            if(!res.exist){
+                alert("user not found");
+                return;
+            }
+        }).catch(err => console.error(err));
+        type="cash-send";
+    }else{
+        
     }
-
-    if(parseFloat(Balance) < parseFloat(amount)){
-        alert("can not place this transaction EROR(0001)")
-        cancelPopup();
-        return;
-    }
-    Balance = parseFloat(Balance) - parseFloat(amount);
-    localStorage.setItem("Balance", Balance);
-
-
-
-
-
-// check the type
-    let type;
-    if(String(cashType).toLowerCase().includes('send')){
-        type = "send";
-    } else {
-        type = "received";
-    }
-
-    //check if there is a sufficient amount
-    if(!amount || amount <=0){
-        alert("you need to choose an amount")
-        return;
-    }
-
-    // edit the speed amount per/Month
-    let spent=JSON.parse(localStorage.getItem("spent"))|| [0,0,0];
-    spent[1] += parseFloat(amount);
-    spent[0] += parseFloat(amount);
-    spent[2] += parseFloat(amount);
-
-    localStorage.setItem("spent", JSON.stringify(spent));
-
-    let Balancee=parseFloat(localStorage.getItem("Balance")) || 0;
-
-    // let transaction_number=parseFloat(localStorage.getItem("NumberOfTransactions")) || 0;
-    // transaction_number++;
-    // localStorage.setItem("NumberOfTransactions",transaction_number);
-
-    let TranNum = JSON.parse(localStorage.getItem("TranNum"))|| [0,0,0];
-    TranNum[0]++;
-    TranNum[1]++;
-    TranNum[2]++;
-    let transaction_number = TranNum[0];
-
-    localStorage.setItem("TranNum", JSON.stringify(TranNum));
-
-    let transaction_code = GenerateGlobalTransactionCode();
-
-    const date = new Date().toLocaleDateString();
-
-    DIVSData.push({USER_ID, cashType, toinfo, date, type, amount, Balancee, transaction_code, transaction_number});
-    localStorage.setItem("operations", JSON.stringify(DIVSData));
-    // create operation in DOM without reloading
-    createOperation(USER_ID, cashType, toinfo, date, type, amount);
-    // persist balance was already updated
+    
+    cancelPopup();
     return;
-
-
-
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function confirmedOperation(){
+//     const amount=document.getElementById("amount-input").value
+//     const To=document.getElementById("to-input").value
+//     popup.dataset.type="cash-out"
+//     let popup=document.getElementById("popup-id");
+//     const cashType= popup.dataset.type;
+//     const toinfo=document.getElementById("to-input").value
+//     // const User_iD=localStorage.getItem("User-ID");
+
+
+//    if(To){
+//      if(To!=="majd-9829" && To!=="name-1212" ){
+//         alert("User Not Found")
+//         // cancelPopup();
+//         return;
+//     }
+//    }
+
+//     // validate amount
+//     if(!amount || parseFloat(amount) <= 0){
+//         alert("you need to choose an amount")
+//         return;
+//     }
+
+//     if(parseFloat(Balance) < parseFloat(amount)){
+//         alert("can not place this transaction EROR(0001)")
+//         cancelPopup();
+//         return;
+//     }
+//     Balance = parseFloat(Balance) - parseFloat(amount);
+//     localStorage.setItem("Balance", Balance);
+
+
+
+
+
+// // check the type
+//     let type;
+//     if(String(cashType).toLowerCase().includes('send')){
+//         type = "send";
+//     } else {
+//         type = "received";
+//     }
+
+//     //check if there is a sufficient amount
+//     if(!amount || amount <=0){
+//         alert("you need to choose an amount")
+//         return;
+//     }
+
+//     // edit the speed amount per/Month
+//     let spent=JSON.parse(localStorage.getItem("spent"))|| [0,0,0];
+//     spent[1] += parseFloat(amount);
+//     spent[0] += parseFloat(amount);
+//     spent[2] += parseFloat(amount);
+
+//     localStorage.setItem("spent", JSON.stringify(spent));
+
+//     let Balancee=parseFloat(localStorage.getItem("Balance")) || 0;
+
+//     // let transaction_number=parseFloat(localStorage.getItem("NumberOfTransactions")) || 0;
+//     // transaction_number++;
+//     // localStorage.setItem("NumberOfTransactions",transaction_number);
+
+//     let TranNum = JSON.parse(localStorage.getItem("TranNum"))|| [0,0,0];
+//     TranNum[0]++;
+//     TranNum[1]++;
+//     TranNum[2]++;
+//     let transaction_number = TranNum[0];
+
+//     localStorage.setItem("TranNum", JSON.stringify(TranNum));
+
+//     let transaction_code = GenerateGlobalTransactionCode();
+
+//     const date = new Date().toLocaleDateString();
+
+//     DIVSData.push({USER_ID, cashType, toinfo, date, type, amount, Balancee, transaction_code, transaction_number});
+//     localStorage.setItem("operations", JSON.stringify(DIVSData));
+//     // create operation in DOM without reloading
+//     createOperation(USER_ID, cashType, toinfo, date, type, amount);
+//     // persist balance was already updated
+//     return;
+
+
+
+// }
 
 function loadOperations(){
     

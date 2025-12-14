@@ -94,6 +94,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+
+    if($action === "CheckBalance"){
+        $balance = (float)$data['money'];
+        $query="SELECT balance FROM wallets WHERE User_id=? AND balance >= ?";
+
+        $stat = $db->prepare($query);
+        if (!$stat) {
+            die("Prepare failed: " . $db->error);
+        }
+        $stat->bind_param('id', $userId,$balance);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }
+        $result = $stat->get_result();
+        header('Content-Type: application/json');
+        if($result->num_rows == 1){
+        
+        echo json_encode([
+            "approved" => true,            
+        ]);            
+        }else{
+         echo json_encode([
+            "approved" => false,]);            
+        }
+
+    }
+
+
+    if($action === "receiverExistence"){
+        $receiverid=$data['receiver'];
+        $query="SELECT * FROM users WHERE user_id=?";
+
+        $stat = $db->prepare($query);
+        if (!$stat) {
+            die("Prepare failed: " . $db->error);
+        }
+        $stat->bind_param('i', $receiverid);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }
+        $result = $stat->get_result();
+        header('Content-Type: application/json');
+        if($result->num_rows == 1){
+        
+            echo json_encode([
+            "exist" => true,            
+            ]);            
+        }else{
+            echo json_encode([
+            "exist" => false,]);            
+        }
+                
+
+    }
+
 }
 
 

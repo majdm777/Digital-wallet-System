@@ -124,7 +124,7 @@ DELIMITER ;
 
 
 
-DELimITER$$
+DELIMITER$$
 
 CREATE FUNCTION GetPassword(user_Email VARCHAR(150))
 RETURNS VARCHAR(255)
@@ -147,6 +147,8 @@ DELIMITER ;
 
 
 
+
+-----------------------------------------------------------------------------------------------------------------
 DELIMITER $$
 
 CREATE PROCEDURE InsertNewUser(
