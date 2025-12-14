@@ -123,9 +123,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     if($action === "receiverExistence"){
+        header('Content-Type: application/json');
         $receiverid=$data['receiver'];
+        trim($receiverid);
+        $receiverid=substr($receiverid,strpos($receiverid,'-')+1);
         $query="SELECT * FROM users WHERE user_id=?";
-
+        if($receiverid == $userId){
+            echo json_encode([
+            "exist" => 0,            
+            ]);             
+        }
         $stat = $db->prepare($query);
         if (!$stat) {
             die("Prepare failed: " . $db->error);
@@ -135,15 +142,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("Execute failed: " . $stat->error);
         }
         $result = $stat->get_result();
-        header('Content-Type: application/json');
+        
         if($result->num_rows == 1){
         
             echo json_encode([
-            "exist" => true,            
+            "exist" => 1,            
             ]);            
         }else{
             echo json_encode([
-            "exist" => false,]);            
+            "exist" => -1,]);            
         }
                 
 

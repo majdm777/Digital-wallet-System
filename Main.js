@@ -101,7 +101,6 @@ function PopupByCashOut(){
 
     popup.style.display="flex";
 }
-//=================================================================== check point =================================================================== //
 
 //god help me 
 function CheckUserValidity(){
@@ -127,8 +126,12 @@ function CheckUserValidity(){
 
     if(receiver!=="" ){
         send("receiverExistence",{receiver}).then(res=>{
-            if(!res.exist){
+            if(res.exist==-1){
                 alert("user not found");
+                return;
+            }
+            if(res.exist==0){
+                alert("you cant send money to yourself");
                 return;
             }
         }).catch(err => console.error(err));
@@ -142,6 +145,7 @@ function CheckUserValidity(){
     
 }
 
+//=================================================================== check point =================================================================== //
 
 
 
