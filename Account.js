@@ -1,145 +1,85 @@
-// import { clearOperationsa } from './Main.js';
+let CURRENT_FIELD = "";
 
-function addinfo(){
+function send(action, extraData = {}) {
+    return fetch("Account.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, ...extraData })
+    }).then(res => res.json());
+}
 
-    let output=document.getElementsByClassName("get-info")
+/*LOAD ACCOUNT DATA*/
 
-    
-        
-    output[0].innerHTML=localStorage.getItem("First-Name");
-    output[1].innerHTML=localStorage.getItem("Last-Name")
-    output[2].innerHTML=localStorage.getItem("birthdate")
-    output[3].innerText=localStorage.getItem("nationality")
-    output[4].innerHTML=localStorage.getItem("email")
-    output[5].innerHTML=localStorage.getItem("phone")
-    output[6].innerHTML=localStorage.getItem("First-Name")+"-"+localStorage.getItem("User-Id");
-    output[7].innerHTML=localStorage.getItem("Address")
-    output[8].innerHTML=localStorage.getItem("Incomesrc")
-    output[9].innerHTML=localStorage.getItem("Type-Of-Acc")
-    output[10].innerHTML=localStorage.getItem("Purpose");
+function loadAccountInfo() {
+    send("getAccountInfo").then(data => {
+        const out = document.getElementsByClassName("get-info");
 
-    const infos = document.querySelectorAll(".get-info");
-
-    infos.forEach(el => {
-        if (el.scrollWidth > el.clientWidth) {
-            el.style.paddingLeft="100%";
-            el.style.animation = "reveal 3s linear infinite";
-          }
+        out[0].innerText = data.FirstName;
+        out[1].innerText = data.LastName;
+        out[2].innerText = data.Birthday;
+        out[3].innerText = data.Nationality;
+        out[4].innerText = data.Email;
+        out[5].innerText = data.Phone;
+        out[6].innerText = data.FirstName + "-" + data.user_id;
+        out[7].innerText = data.Address;
+        out[8].innerText = data.Income_source;
+        out[9].innerText = data.Type_Of_Account;
     });
-
-}
-window.onload=addinfo();
-
-
-const Info=document.querySelectorAll(".changeable")
-const input=document.querySelector("#change-input")
-let Itemname=""
-
-function cancelPopup(){
-    document.getElementById("popup-id").style.display="none";
-    document.getElementById("change-input").value="";
-     Itemname=""
-    field=document.querySelector(".feild");
-    field.style.display="block"
-
-   
-}
-function Popup(){
-    popup=document.getElementById("popup-id")
-    popup.style.display="flex";
-    box1=document.getElementById("popup-box-id")
-    box2=document.getElementById("popup-box-id1")
-    // field=document.getElementById("change-input");
-    // popup.style.display="flex";
-    box1.style.display="flex"
-    box2.style.display="none"
-
-     
-    
 }
 
+window.onload = loadAccountInfo;
 
+/*POPUP CONTROL*/
 
-Info.forEach(change => {
-    change.addEventListener("click",()=>{
-        const type=change.dataset.type;
-        const about=change.dataset.about
-        input.type=type
-       
+function Popup() {
+    document.getElementById("popup-id").style.display = "flex";
+    document.getElementById("popup-box-id").style.display = "flex";
+    document.getElementById("popup-box-id1").style.display = "none";
+}
 
-        Itemname=about;
+function cancelPopup() {
+    document.getElementById("popup-id").style.display = "none";
+    document.getElementById("change-input").value = "";
+    CURRENT_FIELD = "";
+}
+
+/*CLICKABLE FIELDS*/
+
+document.querySelectorAll(".changeable").forEach(el => {
+    el.addEventListener("click", () => {
+        CURRENT_FIELD = el.dataset.about;
+        document.getElementById("change-input").type = el.dataset.type;
         Popup();
-
-    })
+    });
 });
 
-function confirmedOperation(){
-    const input=document.getElementById("change-input")
-    let popup=document.getElementById("popup-id");
-         
-    if(input.type==="tel"){
-        const phonePattern = /^[0-9]{8,15}$/;
-        if(!phonePattern.test(input.value.trim())){
-            alert("wrong phone number")
-            return
+/*CONFIRM UPDATE*/
+
+function confirmedOperation() {
+    const value = document.getElementById("change-input").value.trim();
+
+    send("updateField", {
+        field: CURRENT_FIELD,
+        value: value
+    }).then(res => {
+        if (!res.success) {
+            alert(res.msg || "Update failed");
+            return;
         }
-
-    }
-    
-
-
-
-
-    localStorage.setItem(Itemname,input.value)
-    location.reload();
-    cancelPopup();
-    
-    
+        location.reload();
+    });
 }
 
+/*DELETE ACCOUNT*/
 
-function popupdelete(){
-    popup=document.getElementById("popup-id")
-    box1=document.getElementById("popup-box-id")
-    box2=document.getElementById("popup-box-id1")
-    field=document.getElementById("change-input");
-    popup.style.display="flex";
-    box1.style.display="none"
-    box2.style.display="flex"
-}    
-function confirmedDeletion(){
-    localStorage.removeItem("password")
-    localStorage.removeItem("First-Name");
-    localStorage.removeItem("Last-Name")
-    localStorage.removeItem("birthdate")
-    localStorage.removeItem("nationality")
-    localStorage.removeItem("email")
-    localStorage.removeItem("phone")
-    localStorage.removeItem("Address")
-    localStorage.removeItem("Incomesrc")
-    localStorage.removeItem("Type-Of-Acc")
-    localStorage.removeItem("Purpose");
-    localStorage.removeItem("operations")
-    localStorage.removeItem("Balance");
-    localStorage.removeItem("Spend")
-    localStorage.removeItem("InCome")
-    localStorage.removeItem("NumberOfTransactions")
-    localStorage.removeItem("spent")
-    localStorage.removeItem("received")
-    localStorage.removeItem("TranNum")
-    localStorage.removeItem("User-Id");
-
-
-
-
-
-
-    // clearOperationsa();
-
-    window.location.href="index.html"
-
-        
+function popupdelete() {
+    document.getElementById("popup-id").style.display = "flex";
+    document.getElementById("popup-box-id").style.display = "none";
+    document.getElementById("popup-box-id1").style.display = "flex";
 }
-        
 
-// export { cancelPopup, confirmedOperation, popupdelete, confirmedDeletion };
+function confirmedDeletion() {
+    send("deleteAccount").then(() => {
+        window.location.href = "index.html";
+    });
+}

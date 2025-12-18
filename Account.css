@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     margin: 0px;
     display: flex;
     justify-content: center;
@@ -26,6 +27,7 @@ html, body {
     border: 1px solid rgba(255, 255, 255, 0.35);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
+
 .upper {
     display: flex;
     width: 95%;
@@ -37,8 +39,9 @@ html, body {
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .return {
     display: flex;
     justify-content: center;
@@ -57,6 +60,7 @@ html, body {
     background: rgba(255, 255, 255, 0.30);
     transform: translateY(-2px);
 }
+
 .delete {
     cursor: pointer;
     color: white;
@@ -74,6 +78,7 @@ html, body {
     background: #c0392b;
     transform: scale(1.03);
 }
+
 .acc-info {
     width: 100%;
     display: flex;
@@ -91,17 +96,17 @@ html, body {
 }
 
 .acc-info::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 10px;
 }
 
 .acc-info::-webkit-scrollbar-thumb {
-    background: rgba(0,35,94,0.6);
+    background: rgba(0, 35, 94, 0.6);
     border-radius: 10px;
 }
 
 .acc-info::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,35,94,0.8);
+    background: rgba(0, 35, 94, 0.8);
 }
 
 .info {
@@ -131,6 +136,7 @@ html, body {
     border: 2px solid #781313;
     box-shadow: 0 4px 12px rgba(212, 114, 42, 0.15);
 }
+
 .about-info {
     font-weight: 600;
     color: #495057;
@@ -160,14 +166,20 @@ html, body {
 }
 
 @keyframes reveal {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 
 
 
 .popup {
+
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.45);
@@ -176,28 +188,53 @@ html, body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-#popup-id{
-    display:none;
-}
-#popup-box-id1{
+
+#popup-id {
     display: none;
 }
+
+#popup-box-id1 {
+    display: none;
+}
+
 .popup-box {
     width: 35%;
     min-width: 380px;
     background: rgba(255, 255, 255, 0.18);
     border-radius: 22px;
-    padding: 40px 36px;
+    padding: 45px 40px;
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.40);
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
     display: flex;
     flex-direction: column;
     gap: 22px;
     animation: popupFade 0.25s ease-out;
+    font-size:115%;
 }
+
+
+
+/* Animation */
+
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
 .field {
     width: 100%;
     display: flex;
@@ -231,9 +268,10 @@ html, body {
     border-color: #00308f;
     box-shadow: 0 0 8px rgba(0, 48, 143, 0.35);
 }
-#to-field{
+
+#to-field {
     display: flex;
-    
+
 }
 
 .action {
@@ -245,19 +283,28 @@ html, body {
 }
 
 .action-button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
+
+    padding: 10px 24px;
+
     font-weight: 600;
+
+    border-radius: 10px;
+
+    border: none;
+
     cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 100px;
+
+    background: #00308f;
+
+    color: white;
+
+    transition: 0.25s;
+
 }
 
 #cancelation {
     background: #e9ecef;
-    color: #495057;
+    color: #001a3a;
 }
 
 #cancelation:hover {
@@ -266,14 +313,13 @@ html, body {
 }
 
 #confirmation {
-    background: #f5a962;
+    background: #00308f;
     color: white;
 }
 
 #confirmation:hover {
-    background: #d4722a;
+    background: #0044c2;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(245, 169, 98, 0.4);
 }
 
 @media (min-width: 51px) and (max-width: 700px) {
@@ -281,7 +327,8 @@ html, body {
         width: 90%;
         padding: 20px;
     }
-    .upper{
+
+    .upper {
         width: 100%;
         padding: 20px 0px;
     }

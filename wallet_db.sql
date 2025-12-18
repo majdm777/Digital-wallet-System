@@ -301,6 +301,37 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE DeleteUserAccount(
+    IN p_user_id INT
+)
+BEGIN
+    START TRANSACTION;
+
+    DELETE FROM transfers
+    WHERE sender_id = p_user_id
+       OR receiver_id = p_user_id;
+
+    DELETE FROM deposits
+    WHERE User_id = p_user_id;
+
+    DELETE FROM withdrawals
+    WHERE User_id = p_user_id;
+
+    DELETE FROM wallets
+    WHERE User_id = p_user_id;
+
+    DELETE FROM users
+    WHERE user_id = p_user_id;
+
+    COMMIT;
+END $$
+
+DELIMITER ;
+
+
 -- -- =====================================================
 -- -- PROCEDURE: request_deposit
 -- -- Description: Creates a pending deposit request for admin approval.
