@@ -80,6 +80,6 @@ function popupdelete() {
 
 function confirmedDeletion() {
     send("deleteAccount").then(() => {
-        window.location.href = "index.html";
+        window.location.href = "index.php";
     });
 }
