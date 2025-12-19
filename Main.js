@@ -209,7 +209,7 @@ function loadOperations(){
 
 
         if(!Data || Data.length==0){
-            document.querySelector(".rside_user_operations-box").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
+            document.querySelector("#user_operations").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
         }else{
             Data.forEach(row => {
                 sender_ID=row.sender_name+"-"+row.sender_id;
@@ -256,7 +256,7 @@ function createOperation(USER_ID,cashType,toinfo,date,type,amount){
                     </div>
 
     `
-    document.querySelector(".rside_user_operations-box").appendChild(newOperation);
+    document.querySelector("#user_operations").appendChild(newOperation);
     cancelPopup();
     
     return;
