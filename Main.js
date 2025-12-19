@@ -141,7 +141,7 @@ function CheckUserValidity() {
         })
         .catch(()=>{});
         
-        
+        return;
     }
 
     if(receiver === ""){
@@ -185,134 +185,56 @@ function placetransaction(Type,receiver,amount){ //function transfering money . 
     send("transferMoney",{"transaction_code":transaction_code,"type":Type,'receiver_id':receiver,'amount':amount}).then(res =>{
 
         alert(res.comment);
-        return
+        
     })
+    location.reload();
+    return
     
 }
 
 function placeCashOut(amount){
     send("CashOut",{ "amount":amount}).then(majd =>{
         alert(majd.comment);
-        return;
+        
     })
+    location.reload();
+    return;
 }
 
-//=================================================================== check point =================================================================== //
 
-
-
-
-
-
-
-
-
-
-
-
-
-// function confirmedOperation(){
-//     const amount=document.getElementById("amount-input").value
-//     const To=document.getElementById("to-input").value
-//     popup.dataset.type="cash-out"
-//     let popup=document.getElementById("popup-id");
-//     const cashType= popup.dataset.type;
-//     const toinfo=document.getElementById("to-input").value
-//     // const User_iD=localStorage.getItem("User-ID");
-
-
-//    if(To){
-//      if(To!=="majd-9829" && To!=="name-1212" ){
-//         alert("User Not Found")
-//         // cancelPopup();
-//         return;
-//     }
-//    }
-
-//     // validate amount
-//     if(!amount || parseFloat(amount) <= 0){
-//         alert("you need to choose an amount")
-//         return;
-//     }
-
-//     if(parseFloat(Balance) < parseFloat(amount)){
-//         alert("can not place this transaction EROR(0001)")
-//         cancelPopup();
-//         return;
-//     }
-//     Balance = parseFloat(Balance) - parseFloat(amount);
-//     localStorage.setItem("Balance", Balance);
-
-
-
-
-
-// // check the type
-//     let type;
-//     if(String(cashType).toLowerCase().includes('send')){
-//         type = "send";
-//     } else {
-//         type = "received";
-//     }
-
-//     //check if there is a sufficient amount
-//     if(!amount || amount <=0){
-//         alert("you need to choose an amount")
-//         return;
-//     }
-
-//     // edit the speed amount per/Month
-//     let spent=JSON.parse(localStorage.getItem("spent"))|| [0,0,0];
-//     spent[1] += parseFloat(amount);
-//     spent[0] += parseFloat(amount);
-//     spent[2] += parseFloat(amount);
-
-//     localStorage.setItem("spent", JSON.stringify(spent));
-
-//     let Balancee=parseFloat(localStorage.getItem("Balance")) || 0;
-
-//     // let transaction_number=parseFloat(localStorage.getItem("NumberOfTransactions")) || 0;
-//     // transaction_number++;
-//     // localStorage.setItem("NumberOfTransactions",transaction_number);
-
-//     let TranNum = JSON.parse(localStorage.getItem("TranNum"))|| [0,0,0];
-//     TranNum[0]++;
-//     TranNum[1]++;
-//     TranNum[2]++;
-//     let transaction_number = TranNum[0];
-
-//     localStorage.setItem("TranNum", JSON.stringify(TranNum));
-
-//     let transaction_code = GenerateGlobalTransactionCode();
-
-//     const date = new Date().toLocaleDateString();
-
-//     DIVSData.push({USER_ID, cashType, toinfo, date, type, amount, Balancee, transaction_code, transaction_number});
-//     localStorage.setItem("operations", JSON.stringify(DIVSData));
-//     // create operation in DOM without reloading
-//     createOperation(USER_ID, cashType, toinfo, date, type, amount);
-//     // persist balance was already updated
-//     return;
-
-
-
-// }
 
 function loadOperations(){
-    
-    if(localStorage.getItem("operations")){
-        DIVSData=JSON.parse(localStorage.getItem("operations"))
-        DIVSData.forEach(Data => createOperation(Data.USER_ID,Data.cashType,Data.toinfo,Data.date,Data.type,Data.amount))
-            
-    }else{
-        //document.querySelector(".rside_user_operations-box").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
 
-        
-    }
+    send("operations").then(Data=>{
+
+
+        if(!Data || Data.length==0){
+            document.querySelector(".rside_user_operations-box").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
+        }else{
+            Data.forEach(row => {
+                sender_ID=row.sender_name+"-"+row.sender_id;
+                receiver_ID=row.receiver_name+"-"+row.receiver_id;
+                const dateObj = new Date(row.created_at);
+                const formattedDate = 
+                (dateObj.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                dateObj.getDate().toString().padStart(2, '0') + '/' +
+                dateObj.getFullYear(); 
+
+            createOperation(sender_ID,row.Operation,receiver_ID,formattedDate,row.transfer_id,row.amount);
+            
+            });
+        }    
+    })
+
+
+
+    
+
 }
 window.onload = function() {
     fillinfo();
     loadOperations();
+    CreateWithdrawalBox();
 };
 
 
@@ -340,13 +262,9 @@ function createOperation(USER_ID,cashType,toinfo,date,type,amount){
     return;
 
 }
-function clearOperations(){
-    DIVSData.length=0;
-    localStorage.removeItem("operations");
-    // document.querySelector(".rside_user_operations-box").innerHTML=`<p class="emptyMsge">No operations Yet </p>`
 
-    location.reload();
-    
+function reload(){ 
+    location.reload();   
 }
 
 function GenerateGlobalTransactionCode(){
@@ -357,3 +275,61 @@ function GenerateGlobalTransactionCode(){
     }
     return Code;
 }
+
+
+function CreateWithdrawalBox(){
+    const box= document.getElementById("withdrawalRequest")
+    
+    let amount;
+    let withdrawal_id;
+    let dateObj
+    let formattedDate
+
+    send("GetWithdrawalInfo").then(Data=>{
+        if(!Data || Data.length==0){
+            box.innerHTML=`<p class="emptyMsge">No Request Yet </p>` 
+            return;   
+        }else{
+            Data.forEach(data=>{
+            // Datee =data.created_at|| "2025";
+            dateObj = new Date(data.created_at);
+            formattedDate = 
+            (dateObj.getMonth() + 1).toString().padStart(2, '0') + '/' +
+            dateObj.getDate().toString().padStart(2, '0') + '/' +
+            dateObj.getFullYear();            
+            amount=data.amount|| "0.0";
+            withdrawal_id=data.withdrawal_id || "withdrawl id";
+            })
+        } 
+            const newOperation =document.createElement("div");
+            newOperation.classList.add("operation");
+            newOperation.classList.add("glass-small")
+            newOperation.innerHTML=`
+                                    <div class="operation-info">
+                                        <span class="users-operation-info from-operation-info">${USER_ID}</span>
+                                        <span class="type-operation-info cash_type">withdrawal</span>
+                                        <span class="users-operation-info to-operation-info" style=" color:red; cursor:pointer" onclick="RemoveRequest()">Remove Request</span>
+                                    </div>
+                                    <div class="operation-info">
+                                        <span class="users-operation-info date-operation-info">${formattedDate}</span>
+                                        <span class="type-operation-info operation_type">${withdrawal_id}</span>
+                                        <span class="users-operation-info amount-operation-info">${parseFloat(amount).toFixed(2)}$</span>
+                                    </div>
+                                    `
+        box.appendChild(newOperation); 
+
+    })
+
+
+}
+
+
+function RemoveRequest(){
+    send("removeRequest").then(Data=>{
+        alert(Data.comment);
+        
+    })
+    CreateWithdrawalBox();
+    return;
+}
+//=================================================================== check point =================================================================== //

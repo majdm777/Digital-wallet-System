@@ -248,6 +248,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if($action ==="operations"){
+        $query="CALL GetUserTransactions(?)";
+        $stmt=$db->prepare($query);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $transactions = $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($transactions);
+
+
+
+    }
+
+
+    if($action === "GetWithdrawalInfo"){
+        $query="SELECT withdrawal_id,amount,created_at FROM withdrawals WHERE User_id=? AND status='pending'";
+        $stmt=$db->prepare($query);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $transactions = $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($transactions);
+
+    }
+
+
+    if($action === "removeRequest"){
+        $query="CALL RemoveRequest(?,@flag)";
+        $stat=$db->prepare($query);
+        $stat->bind_param('i',$userId);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }  
+        $stat->close();
+        $result=$db->query('SELECT @flag AS status');
+        $row=$result->fetch_assoc();
+         if ($row['status']) {
+            echo json_encode([
+                "comment" => "withdraw request has been removed"
+            ]);
+        } else {
+            echo json_encode([
+                "comment" => "failed to remove the request",
+            ]);
+        } 
+        exit;       
+
+    }
+
 }
 
 

@@ -311,7 +311,6 @@ BEGIN
     START TRANSACTION;
 
 
-
     DELETE FROM wallets
     WHERE User_id = p_user_id;
 
@@ -322,6 +321,68 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetUserTransactions(IN p_user_id INT)
+BEGIN
+    SELECT 
+        t.transfer_id,
+        t.sender_id,
+        s.FirstName AS sender_name,
+        t.receiver_id,
+        r.FirstName AS receiver_name,
+        t.amount,
+        t.Operation,
+        t.created_at
+    FROM transfers t
+    JOIN users s ON t.sender_id = s.user_id
+    JOIN users r ON t.receiver_id = r.user_id
+    WHERE t.sender_id = p_user_id OR t.receiver_id = p_user_id
+    ORDER BY t.created_at DESC;
+END $$
+
+DELIMITER ;
+
+--===========================================================================--
+CREATE PROCEDURE RemoveRequest(
+    IN p_user_id INT,
+    OUT flag BOOLEAN
+)
+BEGIN
+    DECLARE p_amount DECIMAL(15,2);
+
+    SET flag = FALSE;
+    START TRANSACTION;
+
+    IF EXISTS (
+        SELECT 1 FROM withdrawals 
+        WHERE User_id = p_user_id AND status = 'pending'
+    ) THEN
+
+        SELECT amount 
+        INTO p_amount
+        FROM withdrawals 
+        WHERE User_id = p_user_id AND status = 'pending'
+        LIMIT 1;
+
+        UPDATE wallets 
+        SET balance = balance + p_amount 
+        WHERE User_id = p_user_id;
+
+        DELETE FROM withdrawals 
+        WHERE User_id = p_user_id AND status = 'pending';
+
+        COMMIT;
+        SET flag = TRUE;
+    ELSE
+        ROLLBACK;
+    END IF;
+END$$
+
+DELIMITER ;
+
 
 
 -- -- =====================================================
