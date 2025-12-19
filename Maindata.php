@@ -127,8 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         $receiverid = $data['receiver'];
         trim($receiverid);
+        $receiverFname=substr($receiverid,0, strpos($receiverid, '-') );
         $receiverid = substr($receiverid, strpos($receiverid, '-') + 1);
-        $query = "SELECT * FROM users WHERE user_id=?";
+
+        $query = "SELECT * FROM users WHERE user_id=? AND FirstName=?";
         if ($receiverid == $userId) {
             echo json_encode([
                 "exist" => 0,
@@ -140,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$stat) {
             die("Prepare failed: " . $db->error);
         }
-        $stat->bind_param('i', $receiverid);
+        $stat->bind_param('is', $receiverid,$receiverFname);
         if (!$stat->execute()) {
             die("Execute failed: " . $stat->error);
         }
@@ -213,10 +215,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
         } else {
             echo json_encode([
-                "comment" => "withdraw rquest failed",
+                "comment" => "withdraw request failed",
             ]);
         }        
 
+    }
+
+    if($action === 'CheckUserRequest'){
+        
+
+        $query="SELECT * FROM withdrawals WHERE User_id=? AND status=pending";
+        $stat=$db->prepare($query);
+        $stat->bind_param('i',$userId,);
+        if (!$stat->execute()) {
+            die("Execute failed: " . $stat->error);
+        }  
+        $result = $stat->get_result();
+        
+        
+         if ($result->num_rows == 0) {
+            echo json_encode([
+                "approve" => true
+            ]);
+        } else {
+            echo json_encode([
+                "approve" => false
+            ]);
+        }        
+        exit;
     }
 
 }

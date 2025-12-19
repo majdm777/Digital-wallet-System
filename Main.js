@@ -89,6 +89,7 @@ function PopupByCashSend(){
     popup=document.getElementById("popup-id")
     popup.dataset.type="Cash-Send";
     document.getElementById("to-field").style.display="flex";
+    document.getElementById("to-field").value="";
     popup.style.display="flex";
     
 
@@ -96,37 +97,66 @@ function PopupByCashSend(){
 
 function PopupByCashOut(){
     popup=document.getElementById("popup-id")
-    popup.dataset.type="Cash-Send";
+    popup.dataset.type="Cash-Out";
     document.getElementById("to-field").style.display="none";
+    document.getElementById("to-field").value="CashOut"
 
     popup.style.display="flex";
 }
 
 //god help me 
 function CheckUserValidity() {
+
     const amount = document.getElementById("amount-input").value;
     const receiver = document.getElementById("to-input").value.trim();
     const money = parseFloat(amount);
+    popup=document.getElementById("popup-id")
+
 
     if (isNaN(money) || money <= 0) {
         alert("Invalid Amount");
         return;
     }
 
+
     // CASE 1: cash-out (receiver empty)
-    if (receiver === "") {
-        send("CheckBalance", { money })
-            .then(res => {
-                if (!res.approved) {
-                    alert("Insufficient Amount");
-                    return;
+    if (popup.dataset.type === "Cash-Out") {
+        alert("1");
+        
+        send('CheckUserRequest')
+            .then(res =>{
+                if(!res.approve){
+                    alert("error")
+                    return
                 }
-                placeCashOut(money);
-                cancelPopup();
-            });
+                alert("2");
+                return send("CheckBalance", { money })
+            
+            }).then(res => {
+                    if (!res.approved) {
+                        alert("you cant request a withdrawal request while have pending request");
+                        return;
+                    }
+                    placeCashOut(money);
+                    cancelPopup();
+                }); 
+        
+        
+        
+        
+        
+        
+    
         return;
+        
+        
     }
 
+    if(receiver === ""){
+        alert("please enter user id")
+        return;
+    }
+    
     // CASE 2: cash-send
     send("CheckBalance", { money })
         .then(res => {
@@ -154,7 +184,7 @@ function CheckUserValidity() {
 }
 
 
-//=================================================================== check point =================================================================== //
+
 
 
 function placetransaction(Type,receiver,amount){ //function transfering money . review after finishing the database
@@ -175,7 +205,7 @@ function placeCashOut(amount){
     })
 }
 
-
+//=================================================================== check point =================================================================== //
 
 
 
