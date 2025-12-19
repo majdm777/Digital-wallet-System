@@ -5,18 +5,24 @@ function addinfo(){
     let output=document.getElementsByClassName("get-info")
 
     
+        // send("gentuserInfo").then(res =>{
+        //     output[0].innerHTML=res.ID;
+
+
+
         
-    output[0].innerHTML=localStorage.getItem("First-Name");
-    output[1].innerHTML=localStorage.getItem("Last-Name")
-    output[2].innerHTML=localStorage.getItem("birthdate")
-    output[3].innerText=localStorage.getItem("nationality")
-    output[4].innerHTML=localStorage.getItem("email")
-    output[5].innerHTML=localStorage.getItem("phone")
-    output[6].innerHTML=localStorage.getItem("First-Name")+"-"+localStorage.getItem("User-Id");
-    output[7].innerHTML=localStorage.getItem("Address")
-    output[8].innerHTML=localStorage.getItem("Incomesrc")
-    output[9].innerHTML=localStorage.getItem("Type-Of-Acc")
-    output[10].innerHTML=localStorage.getItem("Purpose");
+        // })
+    // output[0].innerHTML=localStorage.getItem("First-Name");
+    // output[1].innerHTML=localStorage.getItem("Last-Name")
+    // output[2].innerHTML=localStorage.getItem("birthdate")
+    // output[3].innerText=localStorage.getItem("nationality")
+    // output[4].innerHTML=localStorage.getItem("email")
+    // output[5].innerHTML=localStorage.getItem("phone")
+    // output[6].innerHTML=localStorage.getItem("First-Name")+"-"+localStorage.getItem("User-Id");
+    // output[7].innerHTML=localStorage.getItem("Address")
+    // output[8].innerHTML=localStorage.getItem("Incomesrc")
+    // output[9].innerHTML=localStorage.getItem("Type-Of-Acc")
+    // output[10].innerHTML=localStorage.getItem("Purpose");
 
     const infos = document.querySelectorAll(".get-info");
 
