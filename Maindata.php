@@ -114,11 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode([
                 "approved" => true,
             ]);
+
         } else {
             echo json_encode([
                 "approved" => false,
             ]);
         }
+        exit;
 
     }
 
@@ -158,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "exist" => -1,
             ]);
         }
-
+        exit;
 
     }
 
@@ -217,16 +219,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode([
                 "comment" => "withdraw request failed",
             ]);
-        }        
+        } 
+        exit;       
 
     }
 
     if($action === 'CheckUserRequest'){
         
 
-        $query="SELECT * FROM withdrawals WHERE User_id=? AND status=pending";
+        $query="SELECT * FROM withdrawals WHERE User_id=? AND status='pending'";
         $stat=$db->prepare($query);
-        $stat->bind_param('i',$userId,);
+        $stat->bind_param('i',$userId);
         if (!$stat->execute()) {
             die("Execute failed: " . $stat->error);
         }  

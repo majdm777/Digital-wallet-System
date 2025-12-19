@@ -51,7 +51,7 @@ function showBallance() {
     
     
     send("getBalance").then(Data => {
-        let totalSpent = parseFloat(Data.spend)*(-1.00) || 100 ;
+        let totalSpent = parseFloat(Data.spend)*(-1.00) || 0 ;
         let totalReceived = parseFloat(Data.received);
          
         // alert("::"+totalSpent);
@@ -121,33 +121,25 @@ function CheckUserValidity() {
 
     // CASE 1: cash-out (receiver empty)
     if (popup.dataset.type === "Cash-Out") {
-        alert("1");
+        
         
         send('CheckUserRequest')
-            .then(res =>{
-                if(!res.approve){
-                    alert("error")
-                    return
-                }
-                alert("2");
-                return send("CheckBalance", { money })
-            
-            }).then(res => {
-                    if (!res.approved) {
-                        alert("you cant request a withdrawal request while have pending request");
-                        return;
-                    }
-                    placeCashOut(money);
-                    cancelPopup();
-                }); 
-        
-        
-        
-        
-        
-        
-    
-        return;
+            .then(res => {
+            if (!res.approve) {
+                alert("You already have a pending withdrawal request");
+                throw "stop";
+            }
+            return send("CheckBalance", { money });
+            })
+            .then(res => {
+            if (!res.approved) {
+            alert("Insufficient balance");
+            throw "stop";
+        }
+        placeCashOut(money);
+        cancelPopup();
+        })
+        .catch(()=>{});
         
         
     }
