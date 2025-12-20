@@ -115,6 +115,9 @@ body {
   border: 1px solid #e1e6ef;
   cursor: pointer;
   transition: all 0.25s ease;
+  display: none;
+  
+
 }
 
 .user-info:hover {
@@ -332,3 +335,44 @@ body {
 .transactions-list::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+/* ================= WITHDRAWALS ================= */ /* <<< NEW */
+#withdrawalsWrap { 
+  margin-bottom: 20px; 
+} 
+
+#withdrawalsList { 
+  max-height: 400px; 
+  overflow-y: auto; 
+} 
+
+.withdrawal-item { 
+  background: white; 
+  padding: 14px; 
+  border-radius: 10px; 
+  margin-bottom: 12px; 
+  border: 1px solid #e1e6ef; 
+  transition: all 0.2s ease; 
+} 
+.withdrawal-item:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12); 
+} 
+
+.withdrawal-item p { 
+  font-size: 13.5px; 
+  margin-bottom: 5px;
+  color: #343a40; 
+} 
+
+.withdrawal-amount { 
+  font-size: 15px; 
+  font-weight: 600; 
+  color: #dc3545; 
+} 
+
+
+
+#error{
+    display: none;
+}
+
