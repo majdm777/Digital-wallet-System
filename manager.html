@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Wallet Admin Panel</title>
+    <link rel="stylesheet" href="manager.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Digital Wallet Manager Panel</h1>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Section - Search -->
+            <div class="section search-section">
+                <h2>Search User</h2>
+                <div class="search-container">
+                    <input type="text" id="userIdSearch" placeholder="Enter User ID..." class="search-input">
+                    <button id="searchBtn" class="btn btn-primary" onclick="searchUser()">Search</button>
+                </div>
+                <div id="userInfo" class="user-info">
+                    <h3>User Details</h3>
+                    <p><strong>User ID:</strong> <span id="displayUserId"></span></p>
+                    <p><strong>Name:</strong> <span id="displayUserName"></span></p>
+                    <p><strong>Email:</strong> <span id="displayEmail"></span></p>
+                    <p><strong>Balance:</strong> $<span id="displayUserBalance"></span></p>
+                </div>
+                <div id="error" class="user-info">
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+            <!--Midlle section dynamic content -->
+
+    <!-- Middle: Transactions / Withdrawals -->
+    <div class="section middle-section">
+        <div id="withdrawalsWrap">
+            <h2>Pending Withdrawal Requests</h2>
+            <div id="withdrawalsList">
+                <p class="placeholder-text">loading withdrawal requests...</p>
+            </div>
+        </div>
+
+        
+        <div id="transactionsList" style="display: none">
+            <h2>Transactions history</h2>
+            <p class="placeholder-text">no transactions</p>
+        </div>
+    </div>
+
+    <!-- Right: User Actions -->
+    <div class="section actions-section">
+        <h2>User Actions</h2>
+        <div id="actionsContainer" class="actions-container hidden">
+            <button id="deleteBtn" class="btn btn-danger">Delete User</button>
+            <button id="addBtn" class="btn btn-success">Add Funds</button>
+            <button id="suspendBtn" class="btn btn-warning">Suspend User</button>
+        </div>
+        <p id="actionsPlaceholder" class="placeholder-text">Click on user details to see actions</p>
+    </div>
+            
+
+
+
+            </div>
+            
+
+            
+
+            </div>
+            
+
+
+            <!-- Middle Section - Transactions
+            <div class="section transactions-section">
+                <h2>Transaction History</h2>
+                <div class="search-container" style="margin-bottom: 15px;">
+                    <input type="text" id="transactionSearch" placeholder="Search transactions..." class="search-input">
+                </div>
+                <div id="transactionsList" class="transactions-list">
+                    <p class="placeholder-text">Search for a user to view transactions</p>
+                </div>
+            </div>
+
+            Right Section - Actions -->
+            <!-- <div class="section actions-section">
+                <h2>User Actions</h2>
+                <div id="actionsContainer" class="actions-container hidden">
+                    <button id="deleteBtn" class="btn btn-danger">Delete User</button>
+                    <button id="suspendBtn" class="btn btn-warning">Suspend User</button>
+                    <button id="addBtn" class="btn btn-success">Add Funds</button>
+                </div>
+                <p id="actionsPlaceholder" class="placeholder-text">Click on user details to see actions</p>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+
+        <form action="admin.php" method="post" class="modal-content">
+            <h2>Delete User</h2>
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="deleteUserId" class="form-input" readonly name="deleteUserId">
+            </div>
+            <div class="form-group">
+                <label>Reason for Deletion:</label>
+                <input type="text" name="delete-description" id="deleteReason" class="form-textarea" placeholder="Enter reason for deleting this user..." rows="4">
+            </div>
+            <div class="modal-actions">
+                <button id="deleteCancelBtn" class="btn btn-secondary">Cancel</button>
+                <input type="submit" name="submit1" id="deleteConfirmBtn" class="btn btn-danger" value="Confirm Delete">
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Suspend Modal -->
+    <div id="suspendModal" class="modal">
+        <form method="post" action="admin.php" class="modal-content">
+            <h2>Suspend User</h2>
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="suspendUserId" class="form-input" name="suspendUserId" readonly>
+            </div>
+            <div class="form-group">
+                <label>Reason for Suspension:</label>
+                <input type="text" id="suspendReason" class="form-textarea" placeholder="Enter reason for suspending this user..." rows="4">
+            </div>
+            <div class="form-group">
+                <label>Suspension Duration:</label>
+                <input type="text" id="suspendDuration" class="form-input" placeholder="e.g., 30 days, 6 months, permanent">
+            </div>
+            <div class="modal-actions">
+                <button id="suspendCancelBtn" class="btn btn-secondary">Cancel</button>
+                <input type="submit" name="submit2" id="suspendConfirmBtn" class="btn btn-warning" value="Confirm Suspend">
+            </div>
+        </form>
+    </div>
+
+    <!-- Add Funds Modal -->
+    <div id="addModal" class="modal">
+        <form method="post" action="admin.php" class="modal-content">
+            <h2>Add Funds</h2>
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="addUserId" class="form-input" readonly name="fundsUserId">
+            </div>
+            <div class="form-group">
+                <label>Amount to Add:</label>
+                <input type="number" id="addAmount" class="form-input" placeholder="Enter amount..." step="0.01" min="0">
+            </div>
+            <div class="modal-actions">
+                <button id="addCancelBtn" class="btn btn-secondary">Cancel</button>
+                <input type="submit" name="submit3" id="addConfirmBtn" class="btn btn-success" value="Confirm Add">
+            </div>
+        </form>
+    </div>
+
+    <script src="manager.js"></script>
+</body>
+</html>

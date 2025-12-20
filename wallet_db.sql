@@ -77,7 +77,7 @@ CREATE TABLE transfers (
     FOREIGN KEY (sender_id) REFERENCES users(user_id),
     FOREIGN KEY (receiver_id) REFERENCES users(user_id)
 );
- 
+
 -- =========================
 -- Table: deposits (User requests to add funds)
 -- Relationship: users (1) -- (N) deposits
@@ -382,6 +382,65 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+CREATE PROCEDURE getPendingWithdrawals()
+BEGIN 
+    SELECT 
+        w.withdrawal_id,
+        w.user_id,
+        CONCAT(u.FirstName, ' ', u.LastName) AS name,
+        w.amount,
+        w.description,
+        w.status,
+        w.created_at
+    FROM withdrawals w
+    JOIN users u ON w.user_id= u.user_id
+    WHERE w.status = 'pending';
+END$$
+
+DELIMITER ;
+
+
+CREATE PROCEDURE getUserBasicInfo(
+    IN p_user_id INT
+)
+BEGIN
+    SELECT 
+        u.user_id,
+        CONCAT(u.FirstName, ' ',u.LastName) AS name,
+        u.Email,
+        u.balance 
+    FROM users u
+    JOIN wallets w ON u.user_id= w.user_id
+    WHERE u.user_id = p_user_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE AddBalanceToWallet(
+    IN p_user_id INT,
+    IN p_amount DECIMAL(15,2),
+    OUT p_new_balance DECIMAL(15,2)
+)
+BEGIN
+    START TRANSACTION;
+
+    UPDATE wallets
+    SET balance = balance + p_amount
+    WHERE User_id = p_user_id;
+
+    SELECT balance
+    INTO p_new_balance
+    FROM wallets
+    WHERE User_id = p_user_id;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+
 
 
 
