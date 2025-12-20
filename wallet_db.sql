@@ -391,7 +391,6 @@ BEGIN
         CONCAT(u.FirstName, ' ', u.LastName) AS name,
         w.amount,
         w.description,
-        w.status,
         w.created_at
     FROM withdrawals w
     JOIN users u ON w.user_id= u.user_id
@@ -409,7 +408,7 @@ BEGIN
         u.user_id,
         CONCAT(u.FirstName, ' ',u.LastName) AS name,
         u.Email,
-        u.balance 
+        w.balance 
     FROM users u
     JOIN wallets w ON u.user_id= w.user_id
     WHERE u.user_id = p_user_id;
@@ -441,7 +440,38 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
 
+CREATE PROCEDURE handleRequests(
+    IN p_manager_id INT,
+    IN p_withdrawal_id INT,
+    IN p_transfer_id INT
+)
+BEGIN
+    -- 1. Declare variables at the TOP
+    DECLARE v_user_id INT;
+    DECLARE v_amount DECIMAL(15,2);
+
+    -- 2. Fetch User ID and Amount before updating/inserting
+    SELECT User_id, amount INTO v_user_id, v_amount 
+    FROM withdrawals 
+    WHERE withdrawal_id = p_withdrawal_id;
+
+    -- 3. Update the withdrawal status (Use COMMA, not AND)
+    UPDATE withdrawals
+    SET status = 'handled', 
+        manager_id = p_manager_id 
+    WHERE withdrawal_id = p_withdrawal_id;
+
+    -- 4. Insert into transfers 
+    -- NOTE: This will fail if transfers.sender_id has a FOREIGN KEY to users.user_id
+    -- because p_manager_id is NOT in the users table.
+    INSERT INTO transfers (transfer_id, sender_id, receiver_id, amount, Operation)
+    VALUES (p_transfer_id, v_user_id, v_user_id, v_amount, 'Cash-Out');
+    
+END $$
+
+DELIMITER ;
 
 
 -- -- =====================================================

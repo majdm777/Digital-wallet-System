@@ -34,7 +34,73 @@ function searchUser() {
     });
 }
 
+function showWithdrawals(){
+  send("getWithdrawalsRequests").then(data => {
+    if(!data || data.length==0){
+      document.querySelector(".placeholder-text").innerHTML="There is no withdrawal requests"
+      return
+    }
+    document.querySelector(".placeholder-text").innerHTML=""
+    data.forEach(element => {
+      renderWithdrawals(element.withdrawal_id, element.user_id, element.name,element.amount, element.created_at);
+    });
 
+  })
+
+
+}
+
+
+function renderWithdrawals(withdrawal_id,user_id, name, amount, date){
+  const withdrawals = document.getElementById("withdrawalsList")
+  document.getElementsByClassName("placeholder-text").innerText=""
+  const newElement =document.createElement("div");
+  newElement.className="transaction-item"
+  newElement.innerHTML= `
+          <p><strong>Withdrawal ID:</strong> ${withdrawal_id}</p>
+          <p><strong>ID:</strong> ${name}-${user_id}</p>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Amount:</strong> ${amount}</p> 
+          <div onclick= "handleRequest(${withdrawal_id})" style= "color:green">handle</div>`
+  withdrawals.appendChild(newElement)
+}
+
+
+
+window.onload=function(){
+  showWithdrawals();
+}
+
+function handleRequest(withdrawal_id){
+  if(!withdrawal_id){
+    alert("error")
+    return
+  }
+  send("handleRequests", {withdrawal_id}).then(data =>{
+    alert(data.comment)
+  })
+
+}
+// function renderUserTransactions(transactions) {
+//   transactionsList.innerHTML = "";
+//   if(transactions.length === 0){
+//     transactionsList.innerHTML = '<p class="placeholder-text">No transactions found</p>';
+//     return;
+//   }
+//   transactions.forEach(t => {
+//     const div = document.createElement("div");
+//     div.className = "transaction-item";
+//     div.innerHTML = `
+//       <p><strong>ID:</strong> ${t.id}</p>
+//       <p><strong>Date:</strong> ${t.date}</p>
+//       <p><strong>Description:</strong> ${t.description}</p>
+//       <p class="transaction-amount ${t.type === "credit" ? "amount-positive" : "amount-negative"}">
+//         <strong>Amount:</strong> ${t.type === "credit" ? "+" : ""}$${Number.parseFloat(t.amount).toFixed(2)}
+//       </p>
+//     `;
+//     transactionsList.appendChild(div);
+//   });
+// }
 
 
 

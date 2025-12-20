@@ -1,43 +1,146 @@
 <?php
+$managerId=1;
+
+function generateNumericTransactionId() {
+    // Generates a random number between 10^9 and (10^10)-1
+    return mt_rand(1000000000, 9999999999);
+}
+
+
+// 1. Turn off display_errors for production/API so they don't break JSON
+ini_set('display_errors', 0); 
 header('Content-Type: application/json');
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    $db = new mysqli("localhost", "root", "", "wallet_db");
-} catch (mysqli_sql_exception $e) {
-    echo json_encode(['error' => 'DB connection failed']);
-    exit;
-}
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"), true);
-    $action = $data['action'] ?? null;
+    $db = new mysqli("localhost", "root", "NewPassword123!", "wallet_db");
+    if($_SERVER['REQUEST_METHOD']==='POST'){
+            $data = json_decode(file_get_contents("php://input"), true);
+            $action = $data['action'] ?? null;
 
     if ($action === "searchUser") {
-
         $userId = (int)$data['userId'];
 
         $stmt = $db->prepare("CALL getUserBasicInfo(?)");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
-        $stmt->bind_result($id, $name, $email, $balance);
+        
+        $result = $stmt->get_result(); // Better way to fetch from procedures
+        $user = $result->fetch_assoc();
 
-        if ($stmt->fetch()) {
+        if ($user) {
             echo json_encode([
-                'userId' => $id,
-                'userName' => $name,
-                'userEmail' => $email,
-                'userBalance' => $balance
+                'userId' => $user['user_id'], // Ensure these match your DB column names
+                'userName' => $user['name'],
+                'userEmail' => $user['Email'],
+                'userBalance' => $user['balance']
             ]);
         } else {
             echo json_encode(['error' => 'User not found']);
         }
 
         $stmt->close();
-        while ($db->more_results() && $db->next_result()) {}
+        // Clear remaining results from the stored procedure call
+        while ($db->more_results()) {
+            $db->next_result();
+        }
+    }
+    if($action==="getWithdrawalsRequests"){
+        $query= "CALL getPendingWithdrawals()";
+        $stmt=$db->prepare($query);
+        $stmt->execute();
+        $result= $stmt->get_result();
+        $requests= $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($requests);
         exit;
     }
+
+    if($action==="handleRequest"){
+
+        $withdrawalID= (int) $data['withdrawal_id'];
+        $transactionId = generateNumericTransactionId();
+        $query= "CALL handleRequests(?,?,?)";
+        $stmt= $db->prepare($query);
+        $stmt->bind_param('iii', $managerId, $withdrawalID, $transactionId);
+        $stmt->execute();
+
+        echo json_encode(["comment"=>"request handled."]);
+        exit;
+    }
+
+    }
+} catch (Exception $e) {
+    // Catch any error and return it as clean JSON
+    echo json_encode(['error' => $e->getMessage()]);
 }
+exit;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// header('Content-Type: application/json');
+
+// mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+// try {
+//     $db = new mysqli("localhost", "root", "NewPassword123!", "wallet_db");
+// } catch (mysqli_sql_exception $e) {
+//     echo json_encode(['error' => 'DB connection failed']);
+//     exit;
+// }
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     $data = json_decode(file_get_contents("php://input"), true);
+//     $action = $data['action'] ?? null;
+
+//     if ($action === "searchUser") {
+
+//         $userId = (int)$data['userId'];
+
+//         $stmt = $db->prepare("CALL getUserBasicInfo(?)");
+//         $stmt->bind_param("i", $userId);
+//         $stmt->execute();
+//         $stmt->bind_result($id, $name, $email, $balance);
+
+//         if ($stmt->fetch()) {
+//             echo json_encode([
+//                 'userId' => $id,
+//                 'userName' => $name,
+//                 'userEmail' => $email,
+//                 'userBalance' => $balance
+//             ]);
+//         } else {
+//             echo json_encode(['error' => 'User not found']);
+//         }
+
+//         $stmt->close();
+//         while ($db->more_results() && $db->next_result()) {}
+//         exit;
+//     }
+// } 
 
 
 
