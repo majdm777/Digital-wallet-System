@@ -1,43 +1,71 @@
 let DIVSuser=[]
+let USER_ID;
+let PERIOD;
+
+function send(action, extraData = {}) {
+    return fetch("HistoryDataHandle.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ action, ...extraData })
+    })
+    .then(res => res.json());
+}
+
+
+
+
+
+
+
+
 
 
 function load_His_Info(period){
-    let spent = JSON.parse(localStorage.getItem("spent")) || [0,0,0];
-    let received=JSON.parse(localStorage.getItem("received"))|| [0,0,0]
-    let TranNum=JSON.parse(localStorage.getItem("TranNum"))|| [0,0,0]
+
+    send("GetHistoryInfo",{period}).then(Data=>{
+        document.getElementById("number_of_tran").innerHTML=Data.transaction_num;
+        document.getElementById("Total_spent").innerHTML=parseFloat(Data.total_spent).toFixed(2)+"$"
+        document.getElementById("Total_received").innerHTML=parseFloat(Data.total_received).toFixed(2)+"$"
+    })
+
 
     
-if(period==="week"){
+if(period == 7){
+    PERIOD=7;
     document.getElementById("year").style.opacity="50%"
     document.getElementById("week").style.opacity="100%"
     document.getElementById("month").style.opacity="50%"
-    document.getElementById("number_of_tran").innerHTML=TranNum[2];
-    document.getElementById("Total_spent").innerHTML=parseFloat(spent[2]).toFixed(2)+"$"
-    document.getElementById("Total_received").innerHTML=parseFloat(received[2]).toFixed(2)+"$"
 
-}else if(period==="year"){
+    
+    
+    
+
+}else if(period == 365){
+    PERIOD=365
     document.getElementById("year").style.opacity="100%"
     document.getElementById("week").style.opacity="50%"
     document.getElementById("month").style.opacity="50%"
 
-    document.getElementById("number_of_tran").innerHTML=TranNum[0];
-    document.getElementById("Total_spent").innerHTML=parseFloat(spent[0]).toFixed(2)+"$"
-    document.getElementById("Total_received").innerHTML=parseFloat(received[0]).toFixed(2)+"$"
-}else{
+
+}else if(period == 30){
+    PERIOD=30;
     document.getElementById("year").style.opacity="50%"
     document.getElementById("week").style.opacity="50%"
     document.getElementById("month").style.opacity="100%"
 
-    document.getElementById("number_of_tran").innerHTML=TranNum[1];
-    document.getElementById("Total_spent").innerHTML=parseFloat(spent[1]).toFixed(2)+"$"
-    document.getElementById("Total_received").innerHTML=parseFloat(received[1]).toFixed(2)+"$"
+
+}else{
+    document.getElementById("year").style.opacity="50%"
+    document.getElementById("week").style.opacity="50%"
+    document.getElementById("month").style.opacity="50%"
 }
 
 }
 
-document.getElementById("year").addEventListener("click",()=>{load_His_Info("year") })
-document.getElementById("month").addEventListener("click",()=>{load_His_Info("month") })
-document.getElementById("week").addEventListener("click",()=>{load_His_Info("week") })
+document.getElementById("year").addEventListener("click",()=>{load_His_Info(365) })
+document.getElementById("month").addEventListener("click",()=>{load_His_Info(30) })
+document.getElementById("week").addEventListener("click",()=>{load_His_Info(7) })
+//===================================================================check point=======================================================================================
 
 function loadUsers() {
     const DIVSData = JSON.parse(localStorage.getItem("operations")) || [];
@@ -132,7 +160,7 @@ function remove_Transaction(number,TranDiv) {
 
 
 window.onload=function(){
-    load_His_Info("");
+    load_His_Info(PERIOD);
     loadUsers();
     loadUserHistory();
 }

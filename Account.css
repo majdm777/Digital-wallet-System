@@ -86,6 +86,7 @@ body {
     flex-direction: row;
     overflow-y: auto;
     flex-wrap: wrap;
+    justify-content: center;
     flex: 1;
     padding: 20px;
     gap: 15px;
