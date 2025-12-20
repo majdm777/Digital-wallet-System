@@ -4,37 +4,36 @@ let managerId;
 function send(action, extraData = {}) {
     return fetch("managerData.php", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, ...extraData })
-    })
-    .then(res => res.json());
+    }).then(res => res.json());
 }
 
-
-function searchUser(){
-  let userId=   parseInt(document.getElementById("userIdSearch").value);
-  if(!userId){
-    alert("Enter a valid User Id please.")
-    return
-  }
-  send("searchUser",{"userId":userId}).then(Data=>{
-    if(!Data || Data.length==0){
-      document.getElementById("error").style.display= "block"
-      document.getElementById("errorMessage").innerText="Invalid User."
-      document.getElementById("userInfo").style.display="none"
-      return
+function searchUser() {
+    const userId = parseInt(document.getElementById("userIdSearch").value);
+    if (!userId){
+      document.getElementById("userInfo").style.display = "none";
+      return alert("Invalid ID")
     }
-    document.getElementById("error").style.display= "none";
-    document.getElementById("userInfo").style.display="block"
-    document.getElementById("displayUserId").innerHTML=Data.userId
-    document.getElementById("displayUserName").innerHTML= Data.userName
-    document.getElementById("displayEmail").innerHTML= Data.userEmail
-    document.getElementById("displayUserBalance").innerHTML= Data.userBalance
+    send("searchUser", { userId }).then(data => {
 
+        if (data.error) {
+            document.getElementById("error").style.display = "block";
+            document.getElementById("error").innerText = data.error;
+            document.getElementById("userInfo").style.display = "none";
+            return;
+        }
 
-  })
+        document.getElementById("error").style.display = "none";
+        document.getElementById("userInfo").style.display = "block";
 
+        displayUserId.innerText = data.userId;
+        displayUserName.innerText = data.userName;
+        displayEmail.innerText = data.userEmail;
+        displayUserBalance.innerText = data.userBalance;
+    });
 }
+
 
 
 

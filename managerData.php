@@ -1,61 +1,43 @@
 <?php
+header('Content-Type: application/json');
 
-
-$host = 'localhost';
-$dbname = 'wallet_db';
-$username = 'root';
-$password = 'NewPassword123!';
-
-$conn = null;
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    $db = new mysqli($host, $username, $password, $dbname);
-} catch (\Exception $e) {
-    // Die with a connection error message
-    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>");
+    $db = new mysqli("localhost", "root", "", "wallet_db");
+} catch (mysqli_sql_exception $e) {
+    echo json_encode(['error' => 'DB connection failed']);
+    exit;
 }
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $data = json_decode(file_get_contents("php://input"), true);
     $action = $data['action'] ?? null;
 
     if ($action === "searchUser") {
 
-    $userId = (int)$data["userId"];
+        $userId = (int)$data['userId'];
 
-    // $stmt = $db->prepare("CALL getUserBasicInfo(?)");
-    // $stmt->bind_param('i', $userId);
-    // $stmt->execute();
+        $stmt = $db->prepare("CALL getUserBasicInfo(?)");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stmt->bind_result($id, $name, $email, $balance);
 
-    // $stmt->bind_result($id, $name, $email, $balance);
+        if ($stmt->fetch()) {
+            echo json_encode([
+                'userId' => $id,
+                'userName' => $name,
+                'userEmail' => $email,
+                'userBalance' => $balance
+            ]);
+        } else {
+            echo json_encode(['error' => 'User not found']);
+        }
 
-    // if ($stmt->fetch()) {
-    //     $response = [
-    //         'userId' => $id,
-    //         'userName' => $name,
-    //         'userEmail' => $email,
-    //         'userBalance' => $balance
-    //     ];
-    // } else {
-    //     $response = ['error' => 'User not found'];
-    // }
-
-    // $stmt->close();
-    // $db->next_result(); // 🔴 REQUIRED
-
-    header('Content-Type: application/json');
-    echo json_encode(['userId' => 4,
-                            'userName' => "mirna",
-                            'userEmail' => 'BLAMHSBS',
-                            'userBalance' => 6273]  );
-    exit;
-}
-
+        $stmt->close();
+        while ($db->more_results() && $db->next_result()) {}
+        exit;
     }
-
-
-
+}
 
 
 
