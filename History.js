@@ -81,86 +81,96 @@ function loadUsers() {
     });
 }
 function loadUserHistory(){
-    if(DIVSuser.length===0){
-        document.querySelector(".Main_Users_history").innerHTML=`<div class="emptymsge">No History Yet</div>`
-    }
-    DIVSuser.forEach(el =>{
-        createUserHistory(el.Users,el.Date)
-    })
-}
 
-function createUserHistory(User_Id,Date){
-    const newUser=document.createElement("div")
-    newUser.classList.add("Unique_User")
-    newUser.innerHTML=`<div class="User_info">
-                    <span class="User_info_upper" id="User_id">${User_Id}</span>
-                    <span class="User_info_upper" id="User_date">${Date}</span>
-
-                </div>
-                <div class="unique_user_extended"></div>`
-    let userTran=newUser.querySelector(".unique_user_extended")
-
-    const DIVSData = JSON.parse(localStorage.getItem("operations")) || [];
-    DIVSData.forEach(elt => {
-        if(elt.toinfo === User_Id){
-            const newTran=document.createElement("div")
-            newTran.classList.add("transactions")
-            newTran.innerHTML=`
-                        <span class="transaction_info" id="amount" >${parseFloat(elt.amount).toFixed(2)}$</span>
-                        <span class="transaction_info" id="Date">${elt.date}</span>
-                        <span class="transaction_info" id="TranCode">${elt.transaction_code}</span>
-                        <span class="transaction_info" id="TranNum">${elt.transaction_number}</span>
-                        <span class="Remove-button" >Remove</span>
-
-                        `
-
-            newTran.setAttribute("Tran_Num",elt.transaction_number)
-            newTran.querySelector(".Remove-button").addEventListener("click",(e)=>{
-                e.stopPropagation();
-
-                remove_Transaction(elt.transaction_number,newTran);
-                return;
-            })
-            userTran.style.justifyContent="start";
-            userTran.appendChild(newTran)
+    send("loadUsers").then(Data=>{
+        if(!Data || Data.length==0){
+            document.querySelector(".Main_Users_history").innerHTML=`<div class="emptymsge">No History Yet</div>`
+            return
         }
+        Data.forEach(row=>{
+            createUserHistory(row.name,row.first_interaction,row.user_id)
+        })
     })
 
-    
-    
-    newUser.addEventListener("click", () => {
-         newUser.classList.toggle("active");
-       
+
+
+
+ 
+}
+
+function createUserHistory(name, Date, ID) {
+    const newUser = document.createElement("div");
+    newUser.classList.add("Unique_User");
+
+    newUser.innerHTML = `
+        <div class="User_info">
+            <span class="User_info_upper">${name}-${ID}</span>
+            <span class="User_info_upper">${Date}</span>
+        </div>
+        <div class="unique_user_extended"></div>
+    `;
+
+    const userTran = newUser.querySelector(".unique_user_extended");
+
+    send("user-to-user_Info", { ID }).then(Data => {
+
+        if (!Data || Data.length === 0) {
+            const newTran = document.createElement("div");
+            newTran.classList.add("transactions");
+            newTran.innerHTML = `<span class="transaction_info">No transactions recorded</span>`;
+            userTran.appendChild(newTran);
+            return;
+        }
+
+        Data.forEach(elt => {
+            const newTran = document.createElement("div");
+            newTran.classList.add("transactions");
+            newTran.innerHTML = `
+                <span class="transaction_info amount">${elt.amount}$</span>
+                <span class="transaction_info date">${elt.created_at}</span>
+                <span class="transaction_info code">${elt.transfer_id}</span>
+                <span class="transaction_info direction">${elt.direction}</span>
+            `;
+            userTran.appendChild(newTran);
+        });
+
+        userTran.style.justifyContent = "start";
     });
-    document.querySelector(".Main_Users_history").appendChild(newUser)
+
+    newUser.addEventListener("click", () => {
+        newUser.classList.toggle("active");
+    });
+
+    document.querySelector(".Main_Users_history").appendChild(newUser);
 }
 
-function remove_Transaction(number,TranDiv) {
-    let DIVSData = JSON.parse(localStorage.getItem("operations")) || [];
+
+// function remove_Transaction(number,TranDiv) {
+//     let DIVSData = JSON.parse(localStorage.getItem("operations")) || [];
 
     
-    DIVSData = DIVSData.filter(tran => tran.transaction_number !== number);
+//     DIVSData = DIVSData.filter(tran => tran.transaction_number !== number);
 
     
-    localStorage.setItem("operations", JSON.stringify(DIVSData));
+//     localStorage.setItem("operations", JSON.stringify(DIVSData));
 
     
     
     
 
-    const parentUser = TranDiv.closest(".Unique_User");
-    const userExtended = parentUser.querySelector(".unique_user_extended");
-    if (TranDiv) TranDiv.remove();
-    if (userExtended.children.length === 0) {
-        userExtended.style.justifyContent="center";
-        userExtended.innerHTML=`<p class="emptymsge" style="color:red">No more transaction</p>`    
-    }
-}
+//     const parentUser = TranDiv.closest(".Unique_User");
+//     const userExtended = parentUser.querySelector(".unique_user_extended");
+//     if (TranDiv) TranDiv.remove();
+//     if (userExtended.children.length === 0) {
+//         userExtended.style.justifyContent="center";
+//         userExtended.innerHTML=`<p class="emptymsge" style="color:red">No more transaction</p>`    
+//     }
+// }
 
 
 
 window.onload=function(){
-    load_His_Info(PERIOD);
+    load_His_Info(30);
     loadUsers();
     loadUserHistory();
 }
