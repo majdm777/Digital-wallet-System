@@ -46,10 +46,44 @@ function showWithdrawals(){
     });
 
   })
-
-
 }
 
+function showTransactions(){
+
+  const displayElem = document.getElementById("displayUserId");
+  const id = parseInt(displayElem.innerText || displayElem.textContent);
+
+  if (isNaN(id)) {
+      console.error("Could not find a valid User ID to fetch transactions");
+      return;
+  }
+  send("getTransactions",{"selectedUserId":id}).then(data=>{
+        if(!data || data.length==0){
+          document.querySelector(".placeholder-text2").innerText="There is no transactions"
+          return
+        }
+        document.querySelector(".placeholder-text2").innerText=""
+        data.forEach(element =>{
+          renderUserTransactions(element.transfer_id, element.sender_name, element.receiver_name, element.sender_id,element.receiver_id,element.created_at, element.amount, element.Operation)
+        });
+
+
+  })
+}
+function renderUserTransactions(transfer_id,s_name,r_name,sender_id,receiver_id,date,amount,Operation){
+  const transactions = document.getElementById("transactionsList")
+  const newElement= document.createElement("div");
+  newElement.className="transaction-item"
+  newElement.innerHTML=`
+          <p><strong>Transaction ID:</strong> ${transfer_id}</p>
+          <p><strong>Sender:</strong> ${s_name}-${sender_id}</p>
+          <p><strong>Receiver:</strong> ${r_name}-${receiver_id}</p>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Amount:</strong> ${amount}</p> 
+          <p><strong>Type:</strong> ${Operation}</p> 
+        `
+        transactions.appendChild(newElement)
+}
 
 function renderWithdrawals(withdrawal_id,user_id, name, amount, date){
   const withdrawals = document.getElementById("withdrawalsList")
@@ -67,20 +101,52 @@ function renderWithdrawals(withdrawal_id,user_id, name, amount, date){
 
 
 
-window.onload=function(){
-  showWithdrawals();
-}
 
 function handleRequest(withdrawal_id){
   if(!withdrawal_id){
     alert("error")
     return
   }
-  send("handleRequests", {withdrawal_id}).then(data =>{
+  send("handleRequest", {withdrawal_id}).then(data =>{
     alert(data.comment)
   })
 
 }
+
+
+
+
+
+function showUserActions(){
+  document.getElementById("actionsContainer").classList.remove("hidden")
+  document.getElementById("actionsPlaceholder").classList.add("hidden")
+  document.getElementById("withdrawalsWrap").classList.add("hidden")
+  document.getElementById("transactionsList").style.display= "block"
+  showTransactions()
+}
+
+function hideUserActions(){
+    document.getElementById("actionsContainer").classList.add("hidden")
+  document.getElementById("actionsPlaceholder").classList.remove("hidden")
+}
+
+
+window.onload=function(){
+  showWithdrawals();
+  hideUserActions();
+}
+
+
+
+// function showActions() {
+//   actionsContainer.classList.remove("hidden")
+//   actionsPlaceholder.classList.add("hidden")
+// }
+
+// function hideActions() {
+//   actionsContainer.classList.add("hidden")
+//   actionsPlaceholder.classList.remove("hidden")
+// }
 // function renderUserTransactions(transactions) {
 //   transactionsList.innerHTML = "";
 //   if(transactions.length === 0){

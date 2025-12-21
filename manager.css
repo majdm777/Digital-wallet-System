@@ -140,8 +140,9 @@ body {
 
 /* ================= TRANSACTIONS ================= */
 .transactions-list {
-  max-height: 520px;
+  max-height: 400px;
   overflow-y: auto;
+  display:none;
 }
 
 .transaction-item {
@@ -308,7 +309,7 @@ body {
   display: none !important;
 }
 
-.placeholder-text {
+.placeholder-text, .placeholder-text2 {
   text-align: center;
   color: #6c757d;
   font-style: italic;
@@ -344,6 +345,7 @@ body {
   max-height: 400px; 
   overflow-y: auto; 
 } 
+
 
 .withdrawal-item { 
   background: white; 

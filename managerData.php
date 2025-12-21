@@ -3,7 +3,7 @@ $managerId=1;
 
 function generateNumericTransactionId() {
     // Generates a random number between 10^9 and (10^10)-1
-    return mt_rand(1000000000, 9999999999);
+    return mt_rand(100000000, 999999999);
 }
 
 
@@ -66,6 +66,19 @@ try {
         $stmt->execute();
 
         echo json_encode(["comment"=>"request handled."]);
+        exit;
+    }
+    if($action==="getTransactions"){
+        $userId= (int) $data['selectedUserId'];
+        $query = "CALL GetUserTransactions(?)";
+        $stmt= $db ->prepare($query);
+        $stmt->bind_param('i',$userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $transactions= $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($transactions);
+        $stmt->close();
+        $db->next_result();
         exit;
     }
 

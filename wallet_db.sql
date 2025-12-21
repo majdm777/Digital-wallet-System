@@ -473,6 +473,10 @@ END $$
 
 DELIMITER ;
 
+DELIMITER $$ 
+
+
+
 
 -- -- =====================================================
 -- -- PROCEDURE: request_deposit

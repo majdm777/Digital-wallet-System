@@ -22,7 +22,7 @@
                     <input type="text" id="userIdSearch" placeholder="Enter User ID..." class="search-input">
                     <button id="searchBtn" class="btn btn-primary" onclick="searchUser()">Search</button>
                 </div>
-                <div id="userInfo" class="user-info">
+                <div id="userInfo" class="user-info" onclick="showUserActions()">
                     <h3>User Details</h3>
                     <p><strong>User ID:</strong> <span id="displayUserId"></span></p>
                     <p><strong>Name:</strong> <span id="displayUserName"></span></p>
@@ -45,9 +45,9 @@
         </div>
 
         
-        <div id="transactionsList" style="display: none">
+        <div id="transactionsList"  class="transactions-list" style="display: none">
             <h2>Transactions history</h2>
-            <p class="placeholder-text">no transactions</p>
+            <p class="placeholder-text2">no transactions</p>
         </div>
     </div>
 
