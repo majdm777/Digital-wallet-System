@@ -63,6 +63,8 @@ function showTransactions(){
           return
         }
         document.querySelector(".placeholder-text2").innerText=""
+
+        document.getElementById("transactionsList").innerHTML=""
         data.forEach(element =>{
           renderUserTransactions(element.transfer_id, element.sender_name, element.receiver_name, element.sender_id,element.receiver_id,element.created_at, element.amount, element.Operation)
         });
