@@ -63,6 +63,7 @@ function showTransactions(){
           return
         }
         document.querySelector(".placeholder-text2").innerText=""
+        document.getElementById("transactionsList").innerHTML=""
         data.forEach(element =>{
           renderUserTransactions(element.transfer_id, element.sender_name, element.receiver_name, element.sender_id,element.receiver_id,element.created_at, element.amount, element.Operation)
         });
@@ -79,7 +80,7 @@ function renderUserTransactions(transfer_id,s_name,r_name,sender_id,receiver_id,
           <p><strong>Sender:</strong> ${s_name}-${sender_id}</p>
           <p><strong>Receiver:</strong> ${r_name}-${receiver_id}</p>
           <p><strong>Date:</strong> ${date}</p>
-          <p><strong>Amount:</strong> ${amount}</p> 
+          <p><strong>Amount:</strong> ${amount}$</p> 
           <p><strong>Type:</strong> ${Operation}</p> 
         `
         transactions.appendChild(newElement)
@@ -94,7 +95,7 @@ function renderWithdrawals(withdrawal_id,user_id, name, amount, date){
           <p><strong>Withdrawal ID:</strong> ${withdrawal_id}</p>
           <p><strong>ID:</strong> ${name}-${user_id}</p>
           <p><strong>Date:</strong> ${date}</p>
-          <p><strong>Amount:</strong> ${amount}</p> 
+          <p><strong>Amount:</strong> ${amount}$</p> 
           <div onclick= "handleRequest(${withdrawal_id})" style= "color:green">handle</div>`
   withdrawals.appendChild(newElement)
 }
