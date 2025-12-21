@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS wallets (
 -- Table: transfers
 -- Relationship: users (1) -- (N) transfers (as sender/receiver)
 -- =========================
-CREATE TABLE transfers (
+CREATE TABLE IF NOT EXISTS transfers (
     transfer_id INT NOT NULL PRIMARY KEY,
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE transfers (
 -- Table: deposits (User requests to add funds)
 -- Relationship: users (1) -- (N) deposits
 -- =========================
-CREATE TABLE deposits (
+CREATE TABLE IF NOT EXISTS deposits (
     deposit_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     manager_id INT,
@@ -96,7 +96,7 @@ CREATE TABLE deposits (
 -- Table: withdrawals (User requests to pull funds)
 -- Relationship: users (1) -- (N) withdrawals
 -- =========================
-CREATE TABLE withdrawals (
+CREATE TABLE IF NOT EXISTS withdrawals (
     withdrawal_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
@@ -127,7 +127,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE FUNCTION CheckUserIdExists(user_ID VARCHAR(150))
+CREATE FUNCTION CheckUserIdExists(user_ID INT)
 RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
