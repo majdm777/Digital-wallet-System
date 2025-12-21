@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS transfers (
     FOREIGN KEY (sender_id) REFERENCES users(user_id),
     FOREIGN KEY (receiver_id) REFERENCES users(user_id)
 );
- 
+
 -- =========================
 -- Table: deposits (User requests to add funds)
 -- Relationship: users (1) -- (N) deposits
@@ -339,7 +339,7 @@ BEGIN
     FROM transfers t
     JOIN users s ON t.sender_id = s.user_id
     JOIN users r ON t.receiver_id = r.user_id
-    WHERE t.sender_id = p_user_id OR t.receiver_id = p_user_id
+    WHERE (t.sender_id = p_user_id OR t.receiver_id = p_user_id) AND t.created_at >= CURDATE() - INTERVAL 30 DAY
     ORDER BY t.created_at DESC;
 END $$
 
@@ -382,6 +382,190 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+CREATE PROCEDURE getPendingWithdrawals()
+BEGIN 
+    SELECT 
+        w.withdrawal_id,
+        w.user_id,
+        CONCAT(u.FirstName, ' ', u.LastName) AS name,
+        w.amount,
+        w.description,
+        w.created_at
+    FROM withdrawals w
+    JOIN users u ON w.user_id= u.user_id
+    WHERE w.status = 'pending';
+END$$
+
+DELIMITER ;
+
+
+CREATE PROCEDURE getUserBasicInfo(
+    IN p_user_id INT
+)
+BEGIN
+    SELECT 
+        u.user_id,
+        CONCAT(u.FirstName, ' ',u.LastName) AS name,
+        u.Email,
+        w.balance 
+    FROM users u
+    JOIN wallets w ON u.user_id= w.user_id
+    WHERE u.user_id = p_user_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE AddBalanceToWallet(
+    IN p_user_id INT,
+    IN p_amount DECIMAL(15,2),
+    OUT p_new_balance DECIMAL(15,2)
+)
+BEGIN
+    START TRANSACTION;
+
+    UPDATE wallets
+    SET balance = balance + p_amount
+    WHERE User_id = p_user_id;
+
+    SELECT balance
+    INTO p_new_balance
+    FROM wallets
+    WHERE User_id = p_user_id;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DELIMITER $$
+
+CREATE PROCEDURE GetUserTransferStats(
+    IN p_user_id INT,
+    IN p_days INT
+)
+BEGIN
+    SELECT
+        COUNT(*) AS total_transfers,
+
+        SUM(CASE WHEN receiver_id = p_user_id THEN amount ELSE 0 END) AS total_received,
+
+        SUM(CASE WHEN sender_id = p_user_id THEN amount ELSE 0 END) AS total_spent
+    FROM transfers
+    WHERE (sender_id = p_user_id OR receiver_id = p_user_id)
+      AND created_at >= CURDATE() - INTERVAL p_days DAY;
+END $$
+
+DELIMITER ;
+--========================================================================
+
+DELIMITER $$
+
+CREATE PROCEDURE GetInteractedUsers(
+    IN p_user_id INT
+)
+BEGIN
+    SELECT
+        u.user_id,
+        CONCAT(u.FirstName, ' ', u.LastName) AS name,
+        u.Email,
+        MIN(t.created_at) AS first_interaction
+    FROM (
+        SELECT receiver_id AS other_user_id, created_at
+        FROM transfers
+        WHERE sender_id = p_user_id
+
+        UNION ALL
+
+        SELECT sender_id AS other_user_id, created_at
+        FROM transfers
+        WHERE receiver_id = p_user_id
+    ) t
+    JOIN users u ON u.user_id = t.other_user_id
+    GROUP BY u.user_id, u.FirstName, u.LastName, u.Email
+    ORDER BY first_interaction ASC;
+END $$
+
+DELIMITER ;
+
+
+
+
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetTransactionsBetweenUsers(
+    IN p_my_id INT,
+    IN p_other_id INT
+)
+BEGIN
+    SELECT
+        transfer_id,
+        amount,
+        created_at,
+        CASE
+            WHEN sender_id = p_my_id THEN 'Sent'
+            WHEN receiver_id = p_my_id THEN 'Received'
+        END AS direction
+    FROM transfers
+    WHERE
+        (sender_id = p_my_id AND receiver_id = p_other_id)
+        OR
+        (sender_id = p_other_id AND receiver_id = p_my_id)
+    ORDER BY created_at DESC;
+END$$
+
+DELIMITER ;
+
+
+
+
+--==========================================================================================majd
+
+
+
+
+
+
+CREATE PROCEDURE handleRequests(
+    IN p_manager_id INT,
+    IN p_withdrawal_id INT,
+    IN p_transfer_id INT
+)
+BEGIN
+    -- 1. Declare variables at the TOP
+    DECLARE v_user_id INT;
+    DECLARE v_amount DECIMAL(15,2);
+
+    -- 2. Fetch User ID and Amount before updating/inserting
+    SELECT User_id, amount INTO v_user_id, v_amount 
+    FROM withdrawals 
+    WHERE withdrawal_id = p_withdrawal_id;
+
+    -- 3. Update the withdrawal status (Use COMMA, not AND)
+    UPDATE withdrawals
+    SET status = 'handled', 
+        manager_id = p_manager_id 
+    WHERE withdrawal_id = p_withdrawal_id;
+
+    -- 4. Insert into transfers 
+    -- NOTE: This will fail if transfers.sender_id has a FOREIGN KEY to users.user_id
+    -- because p_manager_id is NOT in the users table.
+    INSERT INTO transfers (transfer_id, sender_id, receiver_id, amount, Operation)
+    VALUES (p_transfer_id, v_user_id, v_user_id, v_amount, 'Cash-Out');
+    
+END $$
+
+DELIMITER ;
+
+DELIMITER $$ 
+
 
 
 

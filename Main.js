@@ -47,13 +47,12 @@ function showWallet(){
     document.getElementById("popup-id-2").style.display="flex"
 }
 function showBallance() { 
-     document.getElementById("popup-id-3").style.display = "flex";
+    document.getElementById("popup-id-3").style.display = "flex";
     
     
     send("getBalance").then(Data => {
         let totalSpent = parseFloat(Data.spend)*(-1.00) || 0 ;
         let totalReceived = parseFloat(Data.received);
-         
         // alert("::"+totalSpent);
         // Update UI
         document.getElementById("Spend").innerHTML = "" + totalSpent.toFixed(2) + "$" ;
