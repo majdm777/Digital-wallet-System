@@ -442,6 +442,97 @@ DELIMITER ;
 
 DELIMITER $$
 
+DELIMITER $$
+
+CREATE PROCEDURE GetUserTransferStats(
+    IN p_user_id INT,
+    IN p_days INT
+)
+BEGIN
+    SELECT
+        COUNT(*) AS total_transfers,
+
+        SUM(CASE WHEN receiver_id = p_user_id THEN amount ELSE 0 END) AS total_received,
+
+        SUM(CASE WHEN sender_id = p_user_id THEN amount ELSE 0 END) AS total_spent
+    FROM transfers
+    WHERE (sender_id = p_user_id OR receiver_id = p_user_id)
+      AND created_at >= CURDATE() - INTERVAL p_days DAY;
+END $$
+
+DELIMITER ;
+--========================================================================
+
+DELIMITER $$
+
+CREATE PROCEDURE GetInteractedUsers(
+    IN p_user_id INT
+)
+BEGIN
+    SELECT
+        u.user_id,
+        CONCAT(u.FirstName, ' ', u.LastName) AS name,
+        u.Email,
+        MIN(t.created_at) AS first_interaction
+    FROM (
+        SELECT receiver_id AS other_user_id, created_at
+        FROM transfers
+        WHERE sender_id = p_user_id
+
+        UNION ALL
+
+        SELECT sender_id AS other_user_id, created_at
+        FROM transfers
+        WHERE receiver_id = p_user_id
+    ) t
+    JOIN users u ON u.user_id = t.other_user_id
+    GROUP BY u.user_id, u.FirstName, u.LastName, u.Email
+    ORDER BY first_interaction ASC;
+END $$
+
+DELIMITER ;
+
+
+
+
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetTransactionsBetweenUsers(
+    IN p_my_id INT,
+    IN p_other_id INT
+)
+BEGIN
+    SELECT
+        transfer_id,
+        amount,
+        created_at,
+        CASE
+            WHEN sender_id = p_my_id THEN 'Sent'
+            WHEN receiver_id = p_my_id THEN 'Received'
+        END AS direction
+    FROM transfers
+    WHERE
+        (sender_id = p_my_id AND receiver_id = p_other_id)
+        OR
+        (sender_id = p_other_id AND receiver_id = p_my_id)
+    ORDER BY created_at DESC;
+END$$
+
+DELIMITER ;
+
+
+
+
+--==========================================================================================majd
+
+
+
+
+
+
 CREATE PROCEDURE handleRequests(
     IN p_manager_id INT,
     IN p_withdrawal_id INT,
