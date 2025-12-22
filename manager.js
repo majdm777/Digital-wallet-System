@@ -109,7 +109,7 @@ function renderUserTransactions(transfer_id,s_name,r_name,sender_id,receiver_id,
           <p><strong>Sender:</strong> ${s_name}-${sender_id}</p>
           <p><strong>Receiver:</strong> ${r_name}-${receiver_id}</p>
           <p><strong>Date:</strong> ${date}</p>
-          <p><strong>Amount:</strong> ${amount}</p> 
+          <p><strong>Amount:</strong> ${amount}$</p> 
           <p><strong>Type:</strong> ${Operation}</p> 
         `
         transactions.appendChild(newElement)

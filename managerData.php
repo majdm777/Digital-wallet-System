@@ -14,7 +14,7 @@ header('Content-Type: application/json');
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    $db = new mysqli("localhost", "root", "NewPassword123!", "wallet_db");
+    $db = new mysqli("localhost", "root", "", "wallet_db");
     if($_SERVER['REQUEST_METHOD']==='POST'){
             $data = json_decode(file_get_contents("php://input"), true);
             $action = $data['action'] ?? null;
