@@ -138,6 +138,7 @@ function showUserActions(){
   console.log(status)
   if(status==="suspended"){
     document.getElementById("suspendBtn").innerText="Unsuspend user"
+    console.log("workingggg")
   }
   else {
     document.getElementById("suspendBtn").innerText="Suspend user"
