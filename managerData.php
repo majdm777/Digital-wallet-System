@@ -34,7 +34,8 @@ try {
                 'userId' => $user['user_id'], // Ensure these match your DB column names
                 'userName' => $user['name'],
                 'userEmail' => $user['Email'],
-                'userBalance' => $user['balance']
+                'userBalance' => $user['balance'],
+                'status' => $user['status']
             ]);
         } else {
             echo json_encode(['error' => 'User not found']);
@@ -80,6 +81,42 @@ try {
         $stmt->close();
         $db->next_result();
         exit;
+    }
+
+    if($action==="deleteUser"){
+        $userId= (int) $data["userId"];
+        
+        $query = "CALL DeleteUserAccountSafely(?,?,@flag)";
+        $stmt= $db->prepare($query);
+        $stmt->bind_param('ii', $userId, $managerId);
+        $stmt->execute();
+
+        $result = $db->query("SELECT @flag AS status");
+        $row = $result->fetch_assoc(); // associative array
+        echo json_encode([
+                "success" => (bool)($row['status'] ?? 0),
+                "comment" => ($row['status'] ?? 0) ? "User deleted successfully" : "Deletion failed"]);
+
+        exit;
+
+    }
+
+    if($action==="suspendUser"){
+        $userId= (int) $data["userId"];
+        
+        $query = "CALL SuspendUserAccount(?,?,@flag)";
+        $stmt= $db->prepare($query);
+        $stmt->bind_param('ii', $userId, $managerId);
+        $stmt->execute();
+
+        $result = $db->query("SELECT @flag AS status");
+        $row = $result->fetch_assoc(); // associative array
+        echo json_encode([
+            "success" => (bool)($row['status'] ?? 0),
+            "comment" => ($row['status'] ?? 0) ? "User suspended successfully" : "Suspention failed"]);
+
+        exit;
+
     }
 
     }

@@ -1,0 +1,115 @@
+/* ================= GLOBAL SETTINGS ================= */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+body {
+    background: url("IMAGES/photo-1462206092226-f46025ffe607.jpg") center / cover no-repeat fixed;
+    height: 100vh;
+}
+
+.admin-layout {
+    display: flex;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3); /* Darken bg slightly for professional feel */
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 280px;
+    background: rgba(0, 15, 40, 0.9);
+    backdrop-filter: blur(15px);
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand h2 { font-size: 20px; letter-spacing: 2px; margin-bottom: 40px; text-align: center; color: #00d2ff; }
+
+.nav-menu { flex-grow: 1; }
+.nav-item {
+    padding: 15px 20px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.nav-item:hover, .nav-item.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #00d2ff;
+}
+
+.sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 13px; }
+.logout-btn { 
+    margin-top: 15px; width: 100%; padding: 10px; 
+    background: #dc3545; border: none; border-radius: 5px; color: white; cursor: pointer;
+}
+
+/* ================= MAIN CONTENT ================= */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+/* ================= STATS ================= */
+.stats-ribbon {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.stat-card label { color: #666; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.stat-card .value { font-size: 28px; color: #16213e; font-weight: 700; margin-top: 10px; }
+
+/* ================= TABLE ================= */
+.data-section {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.section-header { margin-bottom: 20px; color: #16213e; }
+
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th { padding: 15px; border-bottom: 2px solid #eee; color: #16213e; }
+td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; }
+
+.tag { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.tag-active { background: #e3fcef; color: #28a745; }
+
+/* ================= BUTTONS & MODALS ================= */
+.btn-add { background: #00d2ff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.btn-icon { background: none; border: 1px solid #ddd; padding: 5px 10px; cursor: pointer; margin-right: 5px; border-radius: 4px;}
+.btn-danger { color: #dc3545; }
+
+.modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: none; align-items: center; justify-content: center;
+}
+.modal-content {
+    background: white; padding: 40px; border-radius: 20px; width: 450px;
+}
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; }
+.form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+
+.modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }

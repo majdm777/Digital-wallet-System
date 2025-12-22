@@ -302,23 +302,57 @@ END$$
 
 DELIMITER ;
 
+-- DELIMITER $$
+
+-- CREATE PROCEDURE DeleteUserAccount(
+--     IN p_user_id INT
+-- )
+-- BEGIN
+--     START TRANSACTION;
+
+
+--     DELETE FROM wallets
+--     WHERE User_id = p_user_id;
+
+--     DELETE FROM users
+--     WHERE user_id = p_user_id;
+
+--     COMMIT;
+-- END $$
+
+-- DELIMITER ;
+
+
 DELIMITER $$
 
-CREATE PROCEDURE DeleteUserAccount(
-    IN p_user_id INT
+CREATE PROCEDURE DeleteUserAccountSafely(
+    IN p_user_id INT,
+    IN p_manager_id INT, 
+    OUT flag BOOLEAN
 )
 BEGIN
+    DECLARE remaining_balance DECIMAL(15,2);
+    SET flag = FALSE;
     START TRANSACTION;
 
+    -- Get remaining wallet balance
+    SELECT balance INTO remaining_balance 
+    FROM wallets 
+    WHERE User_id= p_user_id;
 
-    DELETE FROM wallets
-    WHERE User_id = p_user_id;
+    -- Record final withdrawal
+    INSERT INTO withdrawals (User_id, amount, manager_id, status, description)
+        VALUES(p_user_id, remaining_balance, p_manager_id, "handled", "final withdrawal before deleting account");
 
-    DELETE FROM users
-    WHERE user_id = p_user_id;
+    -- Delete the wallet
+    DELETE FROM wallets WHERE User_id = p_user_id;
+
+    -- Mark user as deleted
+    UPDATE users SET status = "deleted" WHERE user_id = p_user_id;
 
     COMMIT;
-END $$
+    SET flag = TRUE;
+END$$
 
 DELIMITER ;
 
@@ -344,6 +378,54 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+
+DELIMITER $$
+
+DELIMITER $$
+
+CREATE PROCEDURE SuspendUserAccount(
+    IN p_user_id INT,
+    IN p_manager_id INT,  -- optional, for logging
+    OUT flag BOOLEAN
+)
+BEGIN
+    DECLARE v_status VARCHAR(20);  -- use VARCHAR instead of ENUM
+    SET flag = FALSE;
+
+    START TRANSACTION;
+
+    -- Get current status
+    SELECT status INTO v_status
+    FROM users
+    WHERE user_id = p_user_id;
+
+    -- Only toggle if active or suspended
+    IF v_status = 'suspended' THEN
+        UPDATE users
+        SET status = 'active'
+        WHERE user_id = p_user_id;
+        SET flag = TRUE;
+        COMMIT;
+
+    ELSEIF v_status = 'active' THEN
+        UPDATE users
+        SET status = 'suspended'
+        WHERE user_id = p_user_id;
+        SET flag = TRUE;
+        COMMIT;
+
+    ELSE
+        -- If deleted or unknown, rollback
+        ROLLBACK;
+        SET flag = FALSE;  -- optional
+    END IF;
+
+END$$
+
+DELIMITER ;
+
 
 --===========================================================================--
 CREATE PROCEDURE RemoveRequest(
@@ -383,6 +465,7 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
 CREATE PROCEDURE getPendingWithdrawals()
 BEGIN 
     SELECT 
@@ -408,10 +491,12 @@ BEGIN
         u.user_id,
         CONCAT(u.FirstName, ' ',u.LastName) AS name,
         u.Email,
-        w.balance 
+        w.balance,
+        u.status
+
     FROM users u
     JOIN wallets w ON u.user_id= w.user_id
-    WHERE u.user_id = p_user_id;
+    WHERE u.user_id = p_user_id AND u.status!="deleted";
 END$$
 
 DELIMITER ;
@@ -457,7 +542,7 @@ BEGIN
         SUM(CASE WHEN sender_id = p_user_id THEN amount ELSE 0 END) AS total_spent
     FROM transfers
     WHERE (sender_id = p_user_id OR receiver_id = p_user_id)
-      AND created_at >= CURDATE() - INTERVAL p_days DAY;
+    AND created_at >= CURDATE() - INTERVAL p_days DAY;
 END $$
 
 DELIMITER ;
@@ -565,6 +650,39 @@ END $$
 DELIMITER ;
 
 DELIMITER $$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
