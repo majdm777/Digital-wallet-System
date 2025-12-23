@@ -28,6 +28,7 @@
                     <p><strong>Name:</strong> <span id="displayUserName"></span></p>
                     <p><strong>Email:</strong> <span id="displayEmail"></span></p>
                     <p><strong>Balance:</strong> $<span id="displayUserBalance"></span></p>
+                    <p><strong>Status:</strong> <span id="displayUserStatus"></span></p>
                 </div>
                 <div id="error" class="user-info">
                     <p id="errorMessage"></p>
@@ -37,6 +38,7 @@
 
     <!-- Middle: Transactions / Withdrawals -->
     <div class="section middle-section">
+        
         <div id="withdrawalsWrap">
             <h2>Pending Withdrawal Requests</h2>
             <div id="withdrawalsList">
@@ -45,9 +47,11 @@
         </div>
 
         
-        <div id="transactionsList"  class="transactions-list" style="display: none">
-            <h2>Transactions history</h2>
-            <p class="placeholder-text2">no transactions</p>
+        <div id="transactionsWrap"  >
+            <h2 class="trans-text">Transactions history</h2>
+            <div  id="transactionsList"  class="transactions-list" style="display: none">
+                <p class="placeholder-text2">no transactions</p>
+            </div>
         </div>
     </div>
 
@@ -55,14 +59,16 @@
     <div class="section actions-section">
         <h2>User Actions</h2>
         <div id="actionsContainer" class="actions-container hidden">
-            <button id="deleteBtn" class="btn btn-danger">Delete User</button>
-            <button id="addBtn" class="btn btn-success">Add Funds</button>
-            <button id="suspendBtn" class="btn btn-warning">Suspend User</button>
+            <button id="deleteBtn" class="btn btn-danger" onclick="showDelete()">Delete User</button>
+            <button id="addBtn" class="btn btn-success" onclick="showAddFunds()">Add Funds</button>
+            <button id="suspendBtn" class="btn btn-warning" onclick="showSuspend()">Suspend User</button>
         </div>
+
         <p id="actionsPlaceholder" class="placeholder-text">Click on user details to see actions</p>
+
     </div>
-            
 
+            
 
 
             </div>
@@ -72,7 +78,6 @@
 
             </div>
             
-
 
             <!-- Middle Section - Transactions
             <div class="section transactions-section">
@@ -101,7 +106,7 @@
     <!-- Delete Modal -->
     <div id="deleteModal" class="modal">
 
-        <form action="admin.php" method="post" class="modal-content">
+        <div class="modal-content">
             <h2>Delete User</h2>
             <div class="form-group">
                 <label>User ID:</label>
@@ -112,16 +117,16 @@
                 <input type="text" name="delete-description" id="deleteReason" class="form-textarea" placeholder="Enter reason for deleting this user..." rows="4">
             </div>
             <div class="modal-actions">
-                <button id="deleteCancelBtn" class="btn btn-secondary">Cancel</button>
-                <input type="submit" name="submit1" id="deleteConfirmBtn" class="btn btn-danger" value="Confirm Delete">
+                <button id="deleteCancelBtn" class="btn btn-secondary" onclick="cancel()">Cancel</button>
+                <button id="deleteConfirmBtn" class="btn btn-danger" onclick="deleteUser()">Confirm Delete</button>
             </div>
-        </form>
+        </div>
 
     </div>
 
     <!-- Suspend Modal -->
     <div id="suspendModal" class="modal">
-        <form method="post" action="admin.php" class="modal-content">
+        <div class="modal-content">
             <h2>Suspend User</h2>
             <div class="form-group">
                 <label>User ID:</label>
@@ -136,15 +141,15 @@
                 <input type="text" id="suspendDuration" class="form-input" placeholder="e.g., 30 days, 6 months, permanent">
             </div>
             <div class="modal-actions">
-                <button id="suspendCancelBtn" class="btn btn-secondary">Cancel</button>
-                <input type="submit" name="submit2" id="suspendConfirmBtn" class="btn btn-warning" value="Confirm Suspend">
+                <button id="suspendCancelBtn" class="btn btn-secondary" onclick="cancel()" >Cancel</button>
+                <button id="suspendConfirmBtn" class="btn btn-warning" onclick="suspendUser()">Confirm Suspend</button>
             </div>
-        </form>
+        </div>
     </div>
 
     <!-- Add Funds Modal -->
     <div id="addModal" class="modal">
-        <form method="post" action="admin.php" class="modal-content">
+        <div class="modal-content">
             <h2>Add Funds</h2>
             <div class="form-group">
                 <label>User ID:</label>
@@ -155,12 +160,15 @@
                 <input type="number" id="addAmount" class="form-input" placeholder="Enter amount..." step="0.01" min="0">
             </div>
             <div class="modal-actions">
-                <button id="addCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="addCancelBtn" class="btn btn-secondary" onclick="cancel()">Cancel</button>
                 <input type="submit" name="submit3" id="addConfirmBtn" class="btn btn-success" value="Confirm Add">
             </div>
-        </form>
+        </div>
     </div>
+    
+    <button class="reload-floating-btn" onclick="reloadData()">⟳</button>
 
     <script src="manager.js"></script>
 </body>
 </html>
+
