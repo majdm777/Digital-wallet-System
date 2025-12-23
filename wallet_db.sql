@@ -327,8 +327,7 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE PROCEDURE GetUserTransactions(IN p_user_id INT)
-BEGIN
-    SELECT 
+BEGIN 
         t.transfer_id,
         t.sender_id,
         s.FirstName AS sender_name,
