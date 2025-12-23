@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
 // Fetch transactions
 $stmt = $db->prepare("
-    SELECT transfer_id, sender_id, receiver_id, amount, Operation, created_at, wallet_balance, remaining_balance, transaction_code 
+    SELECT transfer_id, sender_id, receiver_id, amount, Operation, created_at 
     FROM transfers 
     WHERE sender_id = ? OR receiver_id = ? 
     ORDER BY created_at DESC

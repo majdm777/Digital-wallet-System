@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS users (
     Income_source VARCHAR(100),
     Type_Of_Account VARCHAR(255) NOT NULL,
     Address VARCHAR(254) NOT NULL
+    status ENUM("active","deleted","suspended") DEFAULT "active";
 );
 
 
@@ -118,7 +119,7 @@ BEGIN
 
     SELECT (COUNT(*) > 0) INTO existsFlag
     FROM users
-    WHERE Email = email;
+    WHERE Email = email ;
 
     RETURN existsFlag;
 END $$
