@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS managers (
 );
 
 
+
 -- =========================
 -- Table: users (Core Wallet Users)
 -- =========================
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
+
 -- =========================
 -- Table: wallets
 -- Relationship: users (1) -- (1) wallets
@@ -65,7 +67,7 @@ CREATE TABLE IF NOT EXISTS wallets (
 -- Table: transfers
 -- Relationship: users (1) -- (N) transfers (as sender/receiver)
 -- =========================
-CREATE TABLE IF NOT EXISTS transfers (
+CREATE TABLE transfers (
     transfer_id INT NOT NULL PRIMARY KEY,
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
@@ -82,7 +84,7 @@ CREATE TABLE IF NOT EXISTS transfers (
 -- Table: deposits (User requests to add funds)
 -- Relationship: users (1) -- (N) deposits
 -- =========================
-CREATE TABLE IF NOT EXISTS deposits (
+CREATE TABLE deposits (
     deposit_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     manager_id INT,
@@ -96,7 +98,7 @@ CREATE TABLE IF NOT EXISTS deposits (
 -- Table: withdrawals (User requests to pull funds)
 -- Relationship: users (1) -- (N) withdrawals
 -- =========================
-CREATE TABLE IF NOT EXISTS withdrawals (
+CREATE TABLE withdrawals (
     withdrawal_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
@@ -127,7 +129,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE FUNCTION CheckUserIdExists(user_ID INT)
+CREATE FUNCTION CheckUserIdExists(user_ID VARCHAR(150))
 RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
@@ -649,165 +651,5 @@ END $$
 
 DELIMITER ;
 
-DELIMITER $$ 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- -- =====================================================
--- -- PROCEDURE: request_deposit
--- -- Description: Creates a pending deposit request for admin approval.
--- -- Inputs: user_id, amount, description
--- -- =====================================================
-
--- DELIMITER $$
-
--- CREATE PROCEDURE deposit(
---     IN User_id INT,
---     IN amount DECIMAL(15,2),
---     IN description VARCHAR(255)
--- )
--- BEGIN
---     -- DECLARE wallet INT;
-
---     -- Get wallet ID
---     -- SELECT wallet_id INTO wallet FROM wallets WHERE user_id = user_id;
-
---     -- Insert pending deposit
---     INSERT INTO deposits (User_id, amount, description)
---     VALUES (user_id, amount, description);
---     UPDATE users SET transactions_count = transactions_count + 1 WHERE user_id = User_id;
---     UPDATE wallets SET balance = balance + amount WHERE user_id = User_id;
--- END$$
-
--- DELIMITER ;
-
-
--- -- =====================================================
--- -- PROCEDURE: approve_deposit
--- -- Description: Admin accepts a pending deposit, updates wallet balance.
--- -- Inputs: dep_id (deposit_id)
--- -- =====================================================
-
--- DELIMITER $$
-
--- -- CREATE PROCEDURE approve_deposit(
--- --     IN dep_id INT
--- -- )
--- -- BEGIN
--- --     DECLARE wallet INT;
--- --     DECLARE amount DECIMAL(15,2);
--- --     DECLARE usr INT;
-
--- --     -- Get wallet & amount
--- --     SELECT wallet_id, amount INTO wallet, amount 
--- --     FROM deposits WHERE deposit_id = dep_id;
-
--- --     -- Add money
--- --     UPDATE wallets SET balance = balance + amount WHERE wallet_id = wallet;
-
--- --     -- Mark deposit as accepted
--- --     UPDATE deposits SET status = 'accepted' WHERE deposit_id = dep_id;
-
--- --     -- Update user transaction count
--- --     SELECT user_id INTO usr FROM wallets WHERE wallet_id = wallet;
--- --     UPDATE users SET transactions_count = transactions_count + 1 WHERE user_id = usr;
-
--- -- END$$
-
--- DELIMITER ;
-
-
--- -- =====================================================
--- -- PROCEDURE: request_withdrawal
--- -- Description: Creates a pending withdrawal request for admin approval.
--- -- Inputs: user_id, amount, description
--- -- =====================================================
-
--- DELIMITER $$
-
--- CREATE PROCEDURE request_withdrawal(
---     IN user_id INT,
---     IN amount DECIMAL(15,2),
---     IN description VARCHAR(255)
--- )
--- BEGIN
---     DECLARE wallet INT;
-
---     -- Get wallet
---     SELECT wallet_id INTO wallet FROM wallets WHERE User_id = user_id;
-
---     -- Insert pending withdrawal
---     INSERT INTO withdrawals (User_id, amount, description, status)
---     VALUES (user_id, amount, description, 'pending');
--- END$$
-
--- DELIMITER ;
-
-
--- -- =====================================================
--- -- PROCEDURE: approve_withdrawal
--- -- Description: Admin confirms a withdrawal and deducts wallet balance.
--- -- Inputs: user-id
--- -- =====================================================
-
--- DELIMITER $$
-
--- CREATE PROCEDURE approve_withdrawal(
---     IN userID INT
--- )
--- BEGIN
---     DECLARE wallet INT;
---     DECLARE amount DECIMAL(15,2);
-    
-
---     -- Get wallet & amount
---     SELECT  amount INTO amount 
---     FROM withdrawals WHERE User_id =userID ;
-
---     -- Deduct money
---     UPDATE wallets SET balance = balance - amount WHERE User_id = userID;
-
---     -- Mark withdrawal as accepted
---     UPDATE withdrawals SET status = 'accepted' WHERE User_id = userID;
-
---     -- Update user transaction count
---     -- SELECT user_id INTO usr FROM wallets WHERE wallet_id = wallet;
---     UPDATE users SET transactions_count = transactions_count + 1 WHERE user_id = userID;
-
--- END$$
-
--- DELIMITER ;
