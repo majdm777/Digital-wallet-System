@@ -48,7 +48,7 @@ if (empty($_SESSION['signup_verified']) || $_SESSION['signup_verified'] !== true
             </div>
 
             <div class="row_inputs">
-                <div class="input"><div class="About_Input">Password</div>  <input  id="password" type="password" class="info_inputs" required max="10" name="Passwaord"></div>
+                <div class="input"><div class="About_Input">Password</div>  <input  id="password" type="password" class="info_inputs" required max="10" name="Password"></div>
                 <div class="input"><div class="About_Input">Confirm Password</div> <input  id="con_password" type="password" class="info_inputs" required maxlength="10"></div>
             </div>
 

@@ -1,86 +1,90 @@
 <?php
 session_start();
-try {
-    $db = new mysqli('localhost','root','','wallet_db');
-} catch (\Exception $e) {
-    // Die with a connection error message
-    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>"); 
+
+$db = new mysqli('localhost','root','','wallet_db');
+if ($db->connect_error) {
+    die("Database Connection Failed");
 }
 
-$query1="SELECT Email FROM users WHERE Email=?";
+$query = "SELECT Email, status FROM users WHERE Email = ?";
 
 $message = '';
-$show_verification_form = false; // Track if we should show the verification form
-$email_error = false; // Track if there's an email error
+$show_verification_form = false;
+$email_error = false;
 
-// Handle email submission from SIGNUP.html
+/* =====================
+   EMAIL SUBMIT
+===================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+
     $email = trim($_POST['Email'] ?? '');
-    
-    // Validate email format
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = 'Invalid email format. Please enter a valid email.';
+        $message = 'Invalid email format';
         $email_error = true;
     } else {
-        // Prepare and execute query
-        $stmt = $db->prepare($query1);
-        if (!$stmt) {
-            die("Prepare failed: " . $db->error);
-        }
-        
+
+        $stmt = $db->prepare($query);
         $stmt->bind_param('s', $email);
-        if (!$stmt->execute()) {
-            die("Execute failed: " . $stmt->error);
-        }
-        
+        $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows === 0) {
-        // Email does not exist — generate a 6-digit code and store it in session
+
             $code = random_int(100000, 999999);
             $_SESSION['signup_email'] = $email;
             $_SESSION['signup_code'] = (string)$code;
             $_SESSION['signup_verified'] = false;
-            $_SESSION['code_generated'] = true; // Flag to show verification form
+            $_SESSION['code_generated'] = true;
 
-            // try to send email (may not work on local dev)
-            $subject = 'Your verification code';
-            $body = "Your verification code is: $code";
-            // mail() may be disabled locally; ignore failure for now
-            // @mail($email, $subject, $body);
-
-            // For local testing we also display the code on-screen.
-            $message = 'Verification code sent to ' . htmlspecialchars($email) . '. Please check your email and enter the code below. (code: ' . htmlspecialchars($code) . ')';
+            $message = "Verification code sent to $email (code: $code)";
             $show_verification_form = true;
+
         } else {
-            // Email already exists
-            $message = 'Email already exists. Please use another email.';
+
+            $stmt->bind_result($dbEmail, $status);
+            $stmt->fetch();
+
+            if ($status === 'deleted') {
+                $message = 'This account was deleted. Please contact support.';
+            } else {
+                $message = 'Email already exists';
+            }
+
             $email_error = true;
         }
+
         $stmt->close();
     }
-} else if (isset($_SESSION['code_generated']) && $_SESSION['code_generated']) {
-    // Show verification form if code was already generated
+}
+
+/* =====================
+   SHOW CODE FORM
+===================== */
+if (isset($_SESSION['code_generated']) && $_SESSION['code_generated']) {
     $show_verification_form = true;
 }
 
-// Handle verification form submit (code entry)
+/* =====================
+   VERIFY CODE
+===================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
+
     $entered = trim($_POST['VerCode'] ?? '');
-   
+
     if (!empty($_SESSION['signup_code']) && $entered === $_SESSION['signup_code']) {
         $_SESSION['signup_verified'] = true;
-        unset($_SESSION['code_generated']); // Clear the flag
-        // redirect to details page
+        unset($_SESSION['code_generated']);
         header('Location: SIGNUP-2.php');
         exit;
     } else {
-        $message = 'Verification code incorrect. Please try again.';
+        $message = 'Incorrect verification code';
         $show_verification_form = true;
     }
 }
 
 $db->close();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
