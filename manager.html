@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Wallet Admin Panel</title>
+    <title>Digital Wallet Manager Panel</title>
     <link rel="stylesheet" href="manager.css">
 </head>
 <body>
@@ -42,13 +42,13 @@
         <div id="withdrawalsWrap">
             <h2>Pending Withdrawal Requests</h2>
             <div id="withdrawalsList">
-                <p class="placeholder-text">loading withdrawal requests...</p>
+                <p id="withdrawal-placeholder" class="placeholder-text">loading withdrawal requests...</p>
             </div>
         </div>
 
         
         <div id="transactionsWrap"  >
-            <h2 class="trans-text">Transactions history</h2>
+            <h2 class="trans-text hidden">Transactions history</h2>
             <div  id="transactionsList"  class="transactions-list" style="display: none">
                 <p class="placeholder-text2">no transactions</p>
             </div>
@@ -161,7 +161,7 @@
             </div>
             <div class="modal-actions">
                 <button id="addCancelBtn" class="btn btn-secondary" onclick="cancel()">Cancel</button>
-                <input type="submit" name="submit3" id="addConfirmBtn" class="btn btn-success" value="Confirm Add">
+                <button id="addConfirmBtn" class="btn btn-success" onclick="addFunds()">Confirm Add</button>
             </div>
         </div>
     </div>

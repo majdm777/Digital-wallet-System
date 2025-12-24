@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS managers (
     manager_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    status ENUM("active","inactive")  DEFAULT "inactive",
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -357,7 +358,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+--=======================================================================================--
 
 DELIMITER $$
 
@@ -381,52 +382,63 @@ END $$
 
 DELIMITER ;
 
+--===============================================================================--
 
-
-DELIMITER $$
 
 DELIMITER $$
 
 CREATE PROCEDURE SuspendUserAccount(
     IN p_user_id INT,
-    IN p_manager_id INT,  -- optional, for logging
-    OUT flag BOOLEAN
+    IN p_manager_id INT,
+    OUT flag INT
 )
 BEGIN
-    DECLARE v_status VARCHAR(20);  -- use VARCHAR instead of ENUM
-    SET flag = FALSE;
+    DECLARE v_status VARCHAR(20);
+
+    SET flag = 0;
 
     START TRANSACTION;
 
     -- Get current status
-    SELECT status INTO v_status
+    SELECT status
+    INTO v_status
     FROM users
-    WHERE user_id = p_user_id;
+    WHERE user_id = p_user_id
+    FOR UPDATE;
 
-    -- Only toggle if active or suspended
-    IF v_status = 'suspended' THEN
+    -- User not found
+    IF v_status IS NULL THEN
+        ROLLBACK;
+        SET flag = -1;   -- user not found
+
+    -- Unsuspend
+    ELSEIF v_status = 'suspended' THEN
         UPDATE users
         SET status = 'active'
         WHERE user_id = p_user_id;
-        SET flag = TRUE;
-        COMMIT;
 
+        COMMIT;
+        SET flag = 1;    -- unsuspended
+
+    -- Suspend
     ELSEIF v_status = 'active' THEN
         UPDATE users
         SET status = 'suspended'
         WHERE user_id = p_user_id;
-        SET flag = TRUE;
-        COMMIT;
 
+        COMMIT;
+        SET flag = 2;    -- suspended
+
+    -- Deleted or invalid state
     ELSE
-        -- If deleted or unknown, rollback
         ROLLBACK;
-        SET flag = FALSE;  -- optional
+        SET flag = 0;    -- no action allowed
     END IF;
 
 END$$
 
 DELIMITER ;
+
 
 
 --===========================================================================--
@@ -466,7 +478,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+--===================================================================================--
 DELIMITER $$
 CREATE PROCEDURE getPendingWithdrawals()
 BEGIN 
@@ -483,6 +495,11 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+
+--=======================================================================================--
+DELIMITER $$
 
 
 CREATE PROCEDURE getUserBasicInfo(
@@ -502,7 +519,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+--=======================================================================================--
 DELIMITER $$
 
 CREATE PROCEDURE AddBalanceToWallet(
@@ -527,7 +544,7 @@ END$$
 
 DELIMITER ;
 
-DELIMITER $$
+--====================================================================================--
 
 DELIMITER $$
 
@@ -581,7 +598,7 @@ DELIMITER ;
 
 
 
-
+--=========================================================================--
 
 
 
@@ -653,3 +670,160 @@ DELIMITER ;
 
 
 
+--=======================================================================================--
+DELIMITER $$
+
+CREATE PROCEDURE addFunds(
+    IN  p_transfer_id INT,
+    IN  p_user_id INT,
+    IN  p_amount DECIMAL(15,2),
+    OUT flag INT
+)
+BEGIN
+    DECLARE v_balance DECIMAL(15,2);
+    DECLARE wallet_exists INT;
+
+    SET flag = 0;
+
+    -- 1. Reject invalid amounts
+    IF p_amount <= 0 THEN
+        SET flag = -1;
+    ELSE
+        -- 2. Check if wallet exists
+        SELECT COUNT(*) INTO wallet_exists
+        FROM wallets
+        WHERE user_id = p_user_id;
+
+        IF wallet_exists = 0 THEN
+            SET flag = 0;
+        ELSE
+            -- 3. Get current balance
+            SELECT balance INTO v_balance
+            FROM wallets
+            WHERE user_id = p_user_id
+            FOR UPDATE;
+
+            -- 4. Update wallet balance
+            UPDATE wallets
+            SET balance = v_balance + p_amount
+            WHERE user_id = p_user_id;
+
+            -- 5. Insert transfer record (sender = receiver = user)
+            INSERT INTO transfers (transfer_id, sender_id, receiver_id, amount, Operation)
+            VALUES (p_transfer_id, p_user_id, p_user_id, p_amount, 'Deposit');
+
+            -- 6. Set success flag
+            SET flag = 1;
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE globalBalance(
+    OUT p_balance DECIMAL(15,2)
+)
+BEGIN
+    SELECT SUM(balance) INTO p_balance
+    FROM wallets;
+END$$
+
+DELIMITER ;
+
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE totalUsers(
+    OUT p_usersTotal INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_usersTotal
+    FROM users;
+    WHERE status!="deleted";
+END$$
+
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE totalWithdrawals(
+    OUT p_withdrawalsTotal INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_withdrawalsTotal
+    FROM withdrawals 
+    WHERE status = 'pending';
+END$$
+
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE totalWithdrawals(
+    OUT p_withdrawalsTotal INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_withdrawalsTotal
+    FROM withdrawals 
+    WHERE status = 'pending';
+END$$
+
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE getManagers(
+)
+BEGIN
+    SELECT 
+    m.manager_id, 
+    m.username, 
+    m.email, 
+    m.status,
+    m.created_at,
+    COUNT(w.withdrawal_id) AS handled_count
+FROM managers m
+LEFT JOIN withdrawals w ON m.manager_id = w.manager_id AND w.status = 'handled'
+GROUP BY m.manager_id;
+END$$
+
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE addNewManager(
+    IN p_user_name VARCHAR(50),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    
+    INSERT INTO managers(username, email, password, admin_id)
+    VALUES (p_user_name, p_email, p_password, 1);
+END$$
+
+DELIMITER ;
+
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE invokeManager(
+    IN p_manager_id INT
+)
+BEGIN
+    DECLARE p_status VARCHAR(20);
+    
+    SELECT status INTO p_status
+    FROM managers
+    WHERE manager_id = p_manager_id;
+    
+    IF p_status = 'active' THEN
+        UPDATE managers
+        SET status = 'inactive'
+        WHERE manager_id = p_manager_id;
+    ELSE
+        UPDATE managers
+        SET status = 'active'
+        WHERE manager_id = p_manager_id;
+    END IF;
+
+END$$
+
+DELIMITER ;

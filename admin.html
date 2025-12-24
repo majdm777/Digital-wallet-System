@@ -49,64 +49,48 @@
                 <div class="section-header">
                     <h2>Managers Directory</h2>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Performance</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="managerTableBody">
-                            <tr>
-                                <td>#1</td>
-                                <td>Finance_Pro</td>
-                                <td>finance@wallet.com</td>
-                                <td>82 Handled</td>
-                                <td><span class="tag tag-active">Active</span></td>
-                                <td>
-                                    <button class="btn-icon">Edit</button>
-                                    <button class="btn-icon btn-danger">Revoke</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="table-container" id="managerTableBody">
+
+                        <!-- Header Row -->
+                        <div class="manager-row header">
+                            <div>ID</div>
+                            <div>Username</div>
+                            <div>Email</div>
+                            <div>Performance</div>
+                            <div>Status</div>
+                            <div>Actions</div>
+                        </div>
+
+                        <!-- Manager rows will be appended here by JS -->
+
+                    </div>
+
             </section>
         </main>
     </div>
 
     <div id="addManagerModal" class="modal">
-        <form class="modal-content glass-effect">
+        <div class="modal-content glass-effect">
             <h2>Add System Manager</h2>
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" placeholder="Enter username..." required>
+                <input id="usernameInput" type="text" placeholder="Enter username..." required>
             </div>
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" placeholder="manager@wallet.com" required>
+                <input id="emailInput" type="email" placeholder="manager@wallet.com" required>
             </div>
             <div class="form-group">
                 <label>Temporary Password</label>
-                <input type="password" required>
+                <input id="passwordInput" type="password" required>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="toggleModal('addManagerModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Create Account</button>
+                <button type="submit" class="btn btn-primary" onclick="addManager()">Create Account</button>
             </div>
-        </form>
+        </div>
     </div>
 
-    <script>
-        function toggleModal(id) {
-            const m = document.getElementById(id);
-            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-        }
-    </script>
+    <script src="admin.js" defer></script>
 </body>
 </html>

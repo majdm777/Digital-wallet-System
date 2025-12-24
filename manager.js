@@ -43,10 +43,15 @@ function showWithdrawals(){
   document.getElementById("withdrawalsList").innerHTML = "";
 
   send("getWithdrawalsRequests").then(data => {
-    if(!data || data.length==0){
-      document.querySelector(".placeholder-text").innerHTML="There is no withdrawal requests"
-      return
-    }
+if (!data || data.length === 0) {
+
+  document.querySelector("#withdrawal-placeholder").innerText= "There are no withdrawal requests"
+
+  // document.getElementById("withdrawalsList").innerHTML =
+  //   `<p class="placeholder-text">There are no withdrawal requests</p>`;
+  return;
+}
+
     document.querySelector(".placeholder-text").innerHTML=""
     data.forEach(element => {
       renderWithdrawals(element.withdrawal_id, element.user_id, element.name,element.amount, element.created_at, element.description);
@@ -58,7 +63,7 @@ function showWithdrawals(){
 function renderWithdrawals(withdrawal_id,user_id, name, amount, date, description){
   const withdrawals = document.getElementById("withdrawalsList")
   document.getElementsByClassName("placeholder-text").innerText=""
-  document.querySelector(".trans-text").classList.add("hidden")
+
   const newElement =document.createElement("div");
   newElement.className="transaction-item"
   newElement.innerHTML= `
@@ -105,7 +110,7 @@ function renderUserTransactions(transfer_id,s_name,r_name,sender_id,receiver_id,
           <p><strong>Sender:</strong> ${s_name}-${sender_id}</p>
           <p><strong>Receiver:</strong> ${r_name}-${receiver_id}</p>
           <p><strong>Date:</strong> ${date}</p>
-          <p><strong>Amount:</strong> ${amount}</p> 
+          <p><strong>Amount:</strong> <span>$ </span> ${amount}</p> 
           <p><strong>Type:</strong> ${Operation}</p> 
         `
         transactions.appendChild(newElement)
@@ -124,22 +129,24 @@ function handleRequest(withdrawal_id){
   };
 
 
-function showUserActions(){
+function showUserActions() {
   document.getElementById("actionsContainer").classList.remove("hidden")
   document.getElementById("actionsPlaceholder").classList.add("hidden")
+
   document.getElementById("withdrawalsWrap").classList.add("hidden")
-  document.getElementById("transactionsList").style.display= "block"
+  document.querySelector(".trans-text").classList.remove("hidden")
+  document.getElementById("transactionsList").style.display = "block"
+
   let status = document.getElementById("displayUserStatus").innerText
-  console.log(status)
-  if(status==="suspended"){
-        document.getElementById("suspendBtn").innerText="Unsuspend user"
+  if (status === "suspended") {
+    document.getElementById("suspendBtn").innerText = "Unsuspend user"
+  } else {
+    document.getElementById("suspendBtn").innerText = "Suspend user"
   }
-  else {
-    document.getElementById("suspendBtn").innerText="Suspend user"
-  }
+
   showTransactions()
-  
 }
+
 
 function hideUserActions(){
   document.getElementById("actionsContainer").classList.add("hidden")
@@ -205,10 +212,15 @@ function deleteUser(){
     });
 }
 
-window.onload=function(){
-    showWithdrawals();
-    hideUserActions();
-} 
+window.onload = function () {
+  showWithdrawals();
+  hideUserActions();
+
+  document.querySelector(".trans-text").classList.add("hidden");
+  document.getElementById("transactionsList").style.display = "none";
+  document.getElementById("withdrawalsWrap").classList.remove("hidden");
+};
+
 
 function reloadData() {
     location.reload()
@@ -248,36 +260,79 @@ function deleteUser(){
   }
 
 
-  function suspendUser(){
-      let userId = parseInt(document.getElementById("suspendUserId").value) ;
-      let reason =document.getElementById("suspendReason").value;
-      let duration= document.getElementById("suspendDuration").value;
-      if(!reason){
-        alert("Please provide a reason for suspending")
-        return
-      }
-      if(!duration){
-        alert("Please provide a duration")
-        return
-      }
-      send("suspendUser", {userId}).then(data =>{
-        if(!data.success){
-          alert(data.comment)
-          document.getElementById("suspendReason").value =""
-          cancel()
-          return
+function suspendUser() {
+    let userId = parseInt(document.getElementById("suspendUserId").value);
+    let reason = document.getElementById("suspendReason").value;
+    let duration = document.getElementById("suspendDuration").value;
+
+    if (!reason) {
+        alert("Please provide a reason for suspending");
+        return;
+    }
+    if (!duration) {
+        alert("Please provide a duration");
+        return;
+    }
+
+    send("suspendUser", { userId }).then(data => {
+
+        if (!data.success) {
+            alert(data.message);   
+            document.getElementById("suspendReason").value = "";
+            cancel();
+            return;
         }
-        alert(data.comment)
-        cancel()
+
+        alert(data.message);       
+        cancel();
+
         document.getElementById("displayUserId").innerText = "";
         document.getElementById("displayUserName").innerText = "";
         document.getElementById("displayEmail").innerText = "";
         document.getElementById("displayUserBalance").innerText = "";
-        hideUserActions();
-        location.reload()
-        }).catch(err => {
-          console.error(err);
-          alert("An error occurred while suspending the user.");
-        });
 
+        hideUserActions();
+        location.reload();
+        reloadData();
+
+    }).catch(err => {
+        console.error(err);
+        alert("An error occurred while suspending the user.");
+    });
 }
+
+
+function addFunds(){
+  let userId = parseInt(document.getElementById("addUserId").value);
+  let amount = parseFloat(document.getElementById("addAmount").value);
+
+  if(!amount){
+    alert("Please enter a valid amount")
+    return
+  }
+
+  send("addFunds",{userId,amount}).then(data =>{
+    if(!data.success){
+      alert(data.message)
+      cancel()
+      return
+    }
+        alert(data.message);       
+        cancel();
+
+        document.getElementById("displayUserId").innerText = "";
+        document.getElementById("displayUserName").innerText = "";
+        document.getElementById("displayEmail").innerText = "";
+        document.getElementById("displayUserBalance").innerText = "";
+        document.getElementById("displayUserStatus").innerText = "";
+
+        hideUserActions();
+        location.reload();
+
+    }).catch(err => {
+        console.error(err);
+        alert("An error occurred while adding funds.");
+    });
+
+
+  }

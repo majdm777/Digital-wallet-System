@@ -101,23 +101,92 @@ try {
 
     }
 
-    if($action==="suspendUser"){
-        $userId= (int) $data["userId"];
-        
-        $query = "CALL SuspendUserAccount(?,?,@flag)";
-        $stmt= $db->prepare($query);
-        $stmt->bind_param('ii', $userId, $managerId);
-        $stmt->execute();
+if ($action === "suspendUser") {
 
-        $result = $db->query("SELECT @flag AS status");
-        $row = $result->fetch_assoc(); // associative array
+    $userId = (int) $data["userId"];
+
+    $query = "CALL SuspendUserAccount(?, ?, @flag)";
+    $stmt  = $db->prepare($query);
+    $stmt->bind_param("ii", $userId, $managerId);
+    $stmt->execute();
+    $stmt->close();
+
+    $result = $db->query("SELECT @flag AS status");
+    $row    = $result->fetch_assoc();
+    $flag   = (int) ($row["status"] ?? 0);
+
+    // Handle all cases explicitly
+    if ($flag === 2) {
         echo json_encode([
-            "success" => (bool)($row['status'] ?? 0),
-            "comment" => ($row['status'] ?? 0) ? "User suspended successfully" : "Suspention failed"]);
+            "success" => true,
+            "status"  => "suspended",
+            "message" => "User suspended successfully"
+        ]);
 
-        exit;
+    } elseif ($flag === 1) {
+        echo json_encode([
+            "success" => true,
+            "status"  => "active",
+            "message" => "User unsuspended successfully"
+        ]);
 
+    } elseif ($flag === -1) {
+        echo json_encode([
+            "success" => false,
+            "message" => "User not found"
+        ]);
+
+    } else {
+        echo json_encode([
+            "success" => false,
+            "message" => "Action not allowed"
+        ]);
     }
+
+    exit;
+}
+
+
+if($action==="addFunds"){
+    $transactionId = generateNumericTransactionId();
+    $userId= (int) $data["userId"];
+    $amount= (float) $data["amount"];
+    
+
+    $query = "CALL addFunds(?,?,?,@flag)";
+    $stmt = $db-> prepare($query);
+    $stmt->bind_param("iid", $transactionId,$userId, $amount);
+    $stmt->execute();
+    $stmt->close();
+
+    $result = $db->query("SELECT @flag AS status");
+    $row = $result->fetch_assoc();
+    $flag = (int) ($row["status"] ?? 0);
+
+    if ($flag === 1) {
+        echo json_encode([
+            "success" => true,
+            "message" => "Funds added successfully"
+        ]);
+    
+    }elseif ($flag === 0) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Wallet not found"
+        ]);
+    }elseif ($flag === -1) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid amount"
+        ]);
+    }else
+        echo json_encode([
+            "success" => false,
+            "message" => "Action not allowed"
+        ]);
+    exit;
+}
+
 
     }
 } catch (Exception $e) {
