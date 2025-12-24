@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin | Wallet System</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>ADMIN CORE</h2>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-item active">Dashboard</div>
+                <div class="nav-item">Manager Directory</div>
+                <div class="nav-item">Global Wallets</div>
+                <div class="nav-item">System Security</div>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Admin ID: <span id="currentAdminId">1</span></p>
+                <button class="logout-btn">Log Out</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>System Oversight</h1>
+                <button class="btn btn-add" onclick="toggleModal('addManagerModal')">+ Onboard Manager</button>
+            </header>
+
+            <section class="stats-ribbon">
+                <div class="stat-card">
+                    <label>Total Platform Balance</label>
+                    <div class="value">$<span id="globalBalance">0.00</span></div>
+                </div>
+                <div class="stat-card">
+                    <label>Total Users</label>
+                    <div class="value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <label>Pending Withdrawals</label>
+                    <div class="value" id="pendingCounter">0</div>
+                </div>
+            </section>
+
+            <section class="data-section">
+                <div class="section-header">
+                    <h2>Managers Directory</h2>
+                </div>
+                    <div class="table-container" id="managerTableBody">
+
+                        <!-- Header Row -->
+                        <div class="manager-row header">
+                            <div>ID</div>
+                            <div>Username</div>
+                            <div>Email</div>
+                            <div>Performance</div>
+                            <div>Status</div>
+                            <div>Actions</div>
+                        </div>
+
+                        <!-- Manager rows will be appended here by JS -->
+
+                    </div>
+
+            </section>
+        </main>
+    </div>
+
+    <div id="addManagerModal" class="modal">
+        <div class="modal-content glass-effect">
+            <h2>Add System Manager</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input id="usernameInput" type="text" placeholder="Enter username..." required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input id="emailInput" type="email" placeholder="manager@wallet.com" required>
+            </div>
+            <div class="form-group">
+                <label>Temporary Password</label>
+                <input id="passwordInput" type="password" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="toggleModal('addManagerModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="addManager()">Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js" defer></script>
+</body>
+</html>

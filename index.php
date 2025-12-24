@@ -1,73 +1,104 @@
 <?php
 session_start();
 
-$message = "";
-try {
-    $db = new mysqli('localhost', 'root', '', 'wallet_db');
-} catch (\Exception $e) {
-    // Die with a connection error message
-    die("<h1>Database Connection Failed!</h1><p>Error: " . $e->getMessage() . "</p>");
+$message = $_SESSION['error'] ?? '';
+unset($_SESSION['error']);
+
+$db = new mysqli('localhost', 'root', '', 'wallet_db');
+if ($db->connect_error) {
+    die("Database connection failed");
 }
-$query1 = "SELECT  CheckUserEmailExists(?)";
-$query2 = "SELECT Password FROM users WHERE Email=?";
-$query3 = "SELECT user_id FROM users WHERE Email=?";
+
 if (isset($_POST['LOGIN'])) {
-    $email = $_POST['email'];
+
+    $email    = trim($_POST['email']);
     $password = $_POST['password'];
 
-
-
     if (empty($email) || empty($password)) {
-        $message = "Email and password are required";
-    } else {
-
-        $stat = $db->prepare($query1);
-        if (!$stat) {
-            die("Prepare failed: " . $db->error);
-        }
-        $stat->bind_param('s', $email);
-        if (!$stat->execute()) {
-            die("Execute failed: " . $stat->error);
-        }
-        $result = $stat->get_result();
-        if($result->num_rows == 1){
-            $stat1=$db->prepare($query2);
-            if (!$stat1) {
-                die("Prepare failed: " . $db->error);
-            } 
-            $stat1->bind_param('s',$email);
-            if (!$stat1->execute()) {
-                die("Execute failed: " . $stat1->error);
-            }
-            $stat1->store_result();
-            
-            $stat1->bind_result($passHashedDb);
-            $stat1->fetch();
-            $stat1->free_result();
-
-            $stat2=$db->prepare($query3);
-            $stat2->bind_param('s',$email);
-            $stat2->execute();
-            $stat2->bind_result($userId);
-            $stat2->fetch();
-
-            if(password_verify($password,$passHashedDb)){
-                session_regenerate_id(true);
-                $_SESSION["signup_email"]=$email;
-                $_SESSION["userID"]=$userId ?? 0;
-                header("Location: Main.html");
-                exit();
-            }else{
-                $message = "Invalid email or password";
-            }
-
-
-            
-        }else{
-                $message = "Invalid email or password";
-        }
-
+        $_SESSION['error'] = "Email and password are required";
+        header("Location: index.php");
+        exit();
     }
+
+    /* =======================
+       MANAGER LOGIN
+    ======================== */
+    if (str_ends_with(strtolower($email), '@wallet.com')) {
+
+        $stmt = $db->prepare(
+            "SELECT password FROM managers WHERE email = ?"
+        );
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows !== 1) {
+            $_SESSION['error'] = "Invalid email";
+            header("Location: index.php");
+            exit();
+        }
+
+        $stmt->bind_result($dbPassword);
+        $stmt->fetch();
+
+        if ($password === $dbPassword) { // use password_verify if hashed
+            session_regenerate_id(true);
+            $_SESSION['manager'] = $email;
+            header("Location: manager.html");
+            exit();
+        } else {
+            $_SESSION['error'] = "Invalid password";
+            header("Location: index.php");
+            exit();
+        }
+    }
+
+    /* =======================
+       USER LOGIN
+    ======================== */
+    $stmt = $db->prepare(
+        "SELECT user_id, password, status FROM users WHERE email = ?"
+    );
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows !== 1) {
+        $_SESSION['error'] = "Invalid email or password";
+        header("Location: index.php");
+        exit();
+    }
+
+    $stmt->bind_result($userId, $dbPassword, $status);
+    $stmt->fetch();
+
+    /* ---- STATUS CHECK ---- */
+    if ($status === 'suspended') {
+        $_SESSION['error'] = "Your account is suspended. Please contact support.";
+        header("Location: index.php");
+        exit();
+    }
+
+    if ($status !== 'active') {
+        $_SESSION['error'] = "Invalid email or password";
+        header("Location: index.php");
+        exit();
+    }
+
+    /* ---- PASSWORD CHECK ---- */
+    if (!password_verify($password, $dbPassword)) {
+        $_SESSION['error'] = "Invalid email or password";
+        header("Location: index.php");
+        exit();
+    }
+
+    /* ---- SUCCESS ---- */
+    session_regenerate_id(true);
+    $_SESSION['signup_email'] = $email;
+    $_SESSION['userID'] = $userId;
+
+    header("Location: Main.html");
+    exit();
 }
 
 $db->close();

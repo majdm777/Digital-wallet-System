@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS managers (
     manager_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    status ENUM("active","inactive")  DEFAULT "inactive",
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS managers (
     admin_id INT NOT NULL,  
     FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
 );
+
 
 
 -- =========================
@@ -45,7 +47,9 @@ CREATE TABLE IF NOT EXISTS users (
     Income_source VARCHAR(100),
     Type_Of_Account VARCHAR(255) NOT NULL,
     Address VARCHAR(254) NOT NULL
+    status ENUM("active","deleted","suspended") DEFAULT "active";
 );
+
 
 
 -- =========================
@@ -65,7 +69,7 @@ CREATE TABLE IF NOT EXISTS wallets (
 -- Table: transfers
 -- Relationship: users (1) -- (N) transfers (as sender/receiver)
 -- =========================
-CREATE TABLE IF NOT EXISTS transfers (
+CREATE TABLE transfers (
     transfer_id INT NOT NULL PRIMARY KEY,
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
@@ -82,7 +86,7 @@ CREATE TABLE IF NOT EXISTS transfers (
 -- Table: deposits (User requests to add funds)
 -- Relationship: users (1) -- (N) deposits
 -- =========================
-CREATE TABLE IF NOT EXISTS deposits (
+CREATE TABLE deposits (
     deposit_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     manager_id INT,
@@ -96,7 +100,7 @@ CREATE TABLE IF NOT EXISTS deposits (
 -- Table: withdrawals (User requests to pull funds)
 -- Relationship: users (1) -- (N) withdrawals
 -- =========================
-CREATE TABLE IF NOT EXISTS withdrawals (
+CREATE TABLE withdrawals (
     withdrawal_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
@@ -118,7 +122,7 @@ BEGIN
 
     SELECT (COUNT(*) > 0) INTO existsFlag
     FROM users
-    WHERE Email = email;
+    WHERE Email = email ;
 
     RETURN existsFlag;
 END $$
@@ -127,7 +131,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE FUNCTION CheckUserIdExists(user_ID INT)
+CREATE FUNCTION CheckUserIdExists(user_ID VARCHAR(150))
 RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
@@ -302,32 +306,65 @@ END$$
 
 DELIMITER ;
 
+-- DELIMITER $$
+
+-- CREATE PROCEDURE DeleteUserAccount(
+--     IN p_user_id INT
+-- )
+-- BEGIN
+--     START TRANSACTION;
+
+
+--     DELETE FROM wallets
+--     WHERE User_id = p_user_id;
+
+--     DELETE FROM users
+--     WHERE user_id = p_user_id;
+
+--     COMMIT;
+-- END $$
+
+-- DELIMITER ;
+
+
 DELIMITER $$
 
-CREATE PROCEDURE DeleteUserAccount(
-    IN p_user_id INT
+CREATE PROCEDURE DeleteUserAccountSafely(
+    IN p_user_id INT,
+    IN p_manager_id INT, 
+    OUT flag BOOLEAN
 )
 BEGIN
+    DECLARE remaining_balance DECIMAL(15,2);
+    SET flag = FALSE;
     START TRANSACTION;
 
+    -- Get remaining wallet balance
+    SELECT balance INTO remaining_balance 
+    FROM wallets 
+    WHERE User_id= p_user_id;
 
-    DELETE FROM wallets
-    WHERE User_id = p_user_id;
+    -- Record final withdrawal
+    INSERT INTO withdrawals (User_id, amount, manager_id, status, description)
+        VALUES(p_user_id, remaining_balance, p_manager_id, "handled", "final withdrawal before deleting account");
 
-    DELETE FROM users
-    WHERE user_id = p_user_id;
+    -- Delete the wallet
+    DELETE FROM wallets WHERE User_id = p_user_id;
+
+    -- Mark user as deleted
+    UPDATE users SET status = "deleted" WHERE user_id = p_user_id;
 
     COMMIT;
-END $$
+    SET flag = TRUE;
+END$$
 
 DELIMITER ;
-
+--=======================================================================================--
 
 DELIMITER $$
 
 CREATE PROCEDURE GetUserTransactions(IN p_user_id INT)
-BEGIN
-    SELECT 
+BEGIN 
         t.transfer_id,
         t.sender_id,
         s.FirstName AS sender_name,
@@ -344,6 +381,65 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+--===============================================================================--
+
+
+DELIMITER $$
+
+CREATE PROCEDURE SuspendUserAccount(
+    IN p_user_id INT,
+    IN p_manager_id INT,
+    OUT flag INT
+)
+BEGIN
+    DECLARE v_status VARCHAR(20);
+
+    SET flag = 0;
+
+    START TRANSACTION;
+
+    -- Get current status
+    SELECT status
+    INTO v_status
+    FROM users
+    WHERE user_id = p_user_id
+    FOR UPDATE;
+
+    -- User not found
+    IF v_status IS NULL THEN
+        ROLLBACK;
+        SET flag = -1;   -- user not found
+
+    -- Unsuspend
+    ELSEIF v_status = 'suspended' THEN
+        UPDATE users
+        SET status = 'active'
+        WHERE user_id = p_user_id;
+
+        COMMIT;
+        SET flag = 1;    -- unsuspended
+
+    -- Suspend
+    ELSEIF v_status = 'active' THEN
+        UPDATE users
+        SET status = 'suspended'
+        WHERE user_id = p_user_id;
+
+        COMMIT;
+        SET flag = 2;    -- suspended
+
+    -- Deleted or invalid state
+    ELSE
+        ROLLBACK;
+        SET flag = 0;    -- no action allowed
+    END IF;
+
+END$$
+
+DELIMITER ;
+
+
 
 --===========================================================================--
 CREATE PROCEDURE RemoveRequest(
@@ -382,7 +478,8 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+--===================================================================================--
+DELIMITER $$
 CREATE PROCEDURE getPendingWithdrawals()
 BEGIN 
     SELECT 
@@ -400,6 +497,11 @@ END$$
 DELIMITER ;
 
 
+
+--=======================================================================================--
+DELIMITER $$
+
+
 CREATE PROCEDURE getUserBasicInfo(
     IN p_user_id INT
 )
@@ -408,14 +510,16 @@ BEGIN
         u.user_id,
         CONCAT(u.FirstName, ' ',u.LastName) AS name,
         u.Email,
-        w.balance 
+        w.balance,
+        u.status
+
     FROM users u
     JOIN wallets w ON u.user_id= w.user_id
-    WHERE u.user_id = p_user_id;
+    WHERE u.user_id = p_user_id AND u.status!="deleted";
 END$$
 
 DELIMITER ;
-
+--=======================================================================================--
 DELIMITER $$
 
 CREATE PROCEDURE AddBalanceToWallet(
@@ -440,7 +544,7 @@ END$$
 
 DELIMITER ;
 
-DELIMITER $$
+--====================================================================================--
 
 DELIMITER $$
 
@@ -457,7 +561,7 @@ BEGIN
         SUM(CASE WHEN sender_id = p_user_id THEN amount ELSE 0 END) AS total_spent
     FROM transfers
     WHERE (sender_id = p_user_id OR receiver_id = p_user_id)
-      AND created_at >= CURDATE() - INTERVAL p_days DAY;
+    AND created_at >= CURDATE() - INTERVAL p_days DAY;
 END $$
 
 DELIMITER ;
@@ -494,7 +598,7 @@ DELIMITER ;
 
 
 
-
+--=========================================================================--
 
 
 
@@ -564,132 +668,162 @@ END $$
 
 DELIMITER ;
 
-DELIMITER $$ 
 
 
+--=======================================================================================--
+DELIMITER $$
+
+CREATE PROCEDURE addFunds(
+    IN  p_transfer_id INT,
+    IN  p_user_id INT,
+    IN  p_amount DECIMAL(15,2),
+    OUT flag INT
+)
+BEGIN
+    DECLARE v_balance DECIMAL(15,2);
+    DECLARE wallet_exists INT;
+
+    SET flag = 0;
+
+    -- 1. Reject invalid amounts
+    IF p_amount <= 0 THEN
+        SET flag = -1;
+    ELSE
+        -- 2. Check if wallet exists
+        SELECT COUNT(*) INTO wallet_exists
+        FROM wallets
+        WHERE user_id = p_user_id;
+
+        IF wallet_exists = 0 THEN
+            SET flag = 0;
+        ELSE
+            -- 3. Get current balance
+            SELECT balance INTO v_balance
+            FROM wallets
+            WHERE user_id = p_user_id
+            FOR UPDATE;
+
+            -- 4. Update wallet balance
+            UPDATE wallets
+            SET balance = v_balance + p_amount
+            WHERE user_id = p_user_id;
+
+            -- 5. Insert transfer record (sender = receiver = user)
+            INSERT INTO transfers (transfer_id, sender_id, receiver_id, amount, Operation)
+            VALUES (p_transfer_id, p_user_id, p_user_id, p_amount, 'Deposit');
+
+            -- 6. Set success flag
+            SET flag = 1;
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
 
 
--- -- =====================================================
--- -- PROCEDURE: request_deposit
--- -- Description: Creates a pending deposit request for admin approval.
--- -- Inputs: user_id, amount, description
--- -- =====================================================
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE globalBalance(
+    OUT p_balance DECIMAL(15,2)
+)
+BEGIN
+    SELECT SUM(balance) INTO p_balance
+    FROM wallets;
+END$$
 
--- DELIMITER $$
+DELIMITER ;
 
--- CREATE PROCEDURE deposit(
---     IN User_id INT,
---     IN amount DECIMAL(15,2),
---     IN description VARCHAR(255)
--- )
--- BEGIN
---     -- DECLARE wallet INT;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE totalUsers(
+    OUT p_usersTotal INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_usersTotal
+    FROM users;
+    WHERE status!="deleted";
+END$$
 
---     -- Get wallet ID
---     -- SELECT wallet_id INTO wallet FROM wallets WHERE user_id = user_id;
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE totalWithdrawals(
+    OUT p_withdrawalsTotal INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_withdrawalsTotal
+    FROM withdrawals 
+    WHERE status = 'pending';
+END$$
 
---     -- Insert pending deposit
---     INSERT INTO deposits (User_id, amount, description)
---     VALUES (user_id, amount, description);
---     UPDATE users SET transactions_count = transactions_count + 1 WHERE user_id = User_id;
---     UPDATE wallets SET balance = balance + amount WHERE user_id = User_id;
--- END$$
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE totalWithdrawals(
+    OUT p_withdrawalsTotal INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_withdrawalsTotal
+    FROM withdrawals 
+    WHERE status = 'pending';
+END$$
 
--- DELIMITER ;
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE getManagers(
+)
+BEGIN
+    SELECT 
+    m.manager_id, 
+    m.username, 
+    m.email, 
+    m.status,
+    m.created_at,
+    COUNT(w.withdrawal_id) AS handled_count
+FROM managers m
+LEFT JOIN withdrawals w ON m.manager_id = w.manager_id AND w.status = 'handled'
+GROUP BY m.manager_id;
+END$$
 
-
--- -- =====================================================
--- -- PROCEDURE: approve_deposit
--- -- Description: Admin accepts a pending deposit, updates wallet balance.
--- -- Inputs: dep_id (deposit_id)
--- -- =====================================================
-
--- DELIMITER $$
-
--- -- CREATE PROCEDURE approve_deposit(
--- --     IN dep_id INT
--- -- )
--- -- BEGIN
--- --     DECLARE wallet INT;
--- --     DECLARE amount DECIMAL(15,2);
--- --     DECLARE usr INT;
-
--- --     -- Get wallet & amount
--- --     SELECT wallet_id, amount INTO wallet, amount 
--- --     FROM deposits WHERE deposit_id = dep_id;
-
--- --     -- Add money
--- --     UPDATE wallets SET balance = balance + amount WHERE wallet_id = wallet;
-
--- --     -- Mark deposit as accepted
--- --     UPDATE deposits SET status = 'accepted' WHERE deposit_id = dep_id;
-
--- --     -- Update user transaction count
--- --     SELECT user_id INTO usr FROM wallets WHERE wallet_id = wallet;
--- --     UPDATE users SET transactions_count = transactions_count + 1 WHERE user_id = usr;
-
--- -- END$$
-
--- DELIMITER ;
-
-
--- -- =====================================================
--- -- PROCEDURE: request_withdrawal
--- -- Description: Creates a pending withdrawal request for admin approval.
--- -- Inputs: user_id, amount, description
--- -- =====================================================
-
--- DELIMITER $$
-
--- CREATE PROCEDURE request_withdrawal(
---     IN user_id INT,
---     IN amount DECIMAL(15,2),
---     IN description VARCHAR(255)
--- )
--- BEGIN
---     DECLARE wallet INT;
-
---     -- Get wallet
---     SELECT wallet_id INTO wallet FROM wallets WHERE User_id = user_id;
-
---     -- Insert pending withdrawal
---     INSERT INTO withdrawals (User_id, amount, description, status)
---     VALUES (user_id, amount, description, 'pending');
--- END$$
-
--- DELIMITER ;
-
-
--- -- =====================================================
--- -- PROCEDURE: approve_withdrawal
--- -- Description: Admin confirms a withdrawal and deducts wallet balance.
--- -- Inputs: user-id
--- -- =====================================================
-
--- DELIMITER $$
-
--- CREATE PROCEDURE approve_withdrawal(
---     IN userID INT
--- )
--- BEGIN
---     DECLARE wallet INT;
---     DECLARE amount DECIMAL(15,2);
+DELIMITER ;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE addNewManager(
+    IN p_user_name VARCHAR(50),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255)
+)
+BEGIN
     
+    INSERT INTO managers(username, email, password, admin_id)
+    VALUES (p_user_name, p_email, p_password, 1);
+END$$
 
---     -- Get wallet & amount
---     SELECT  amount INTO amount 
---     FROM withdrawals WHERE User_id =userID ;
+DELIMITER ;
 
---     -- Deduct money
---     UPDATE wallets SET balance = balance - amount WHERE User_id = userID;
+--=========================================================================================--
+DELIMITER $$
+CREATE PROCEDURE invokeManager(
+    IN p_manager_id INT
+)
+BEGIN
+    DECLARE p_status VARCHAR(20);
+    
+    SELECT status INTO p_status
+    FROM managers
+    WHERE manager_id = p_manager_id;
+    
+    IF p_status = 'active' THEN
+        UPDATE managers
+        SET status = 'inactive'
+        WHERE manager_id = p_manager_id;
+    ELSE
+        UPDATE managers
+        SET status = 'active'
+        WHERE manager_id = p_manager_id;
+    END IF;
 
---     -- Mark withdrawal as accepted
---     UPDATE withdrawals SET status = 'accepted' WHERE User_id = userID;
+END$$
 
---     -- Update user transaction count
---     -- SELECT user_id INTO usr FROM wallets WHERE wallet_id = wallet;
---     UPDATE users SET transactions_count = transactions_count + 1 WHERE user_id = userID;
-
--- END$$
-
--- DELIMITER ;
+DELIMITER ;

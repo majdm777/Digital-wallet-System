@@ -74,6 +74,12 @@ $stmt = $db->prepare("
     LEFT JOIN users r ON t.receiver_id = r.user_id
     WHERE t.sender_id = ? OR t.receiver_id = ?
     ORDER BY t.created_at ASC
+=======
+    SELECT transfer_id, sender_id, receiver_id, amount, Operation, created_at 
+    FROM transfers 
+    WHERE sender_id = ? OR receiver_id = ? 
+    ORDER BY created_at DESC
+
 ");
 $stmt->bind_param('ii', $userId, $userId);
 $stmt->execute();
