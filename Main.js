@@ -5,6 +5,18 @@ let DIVSData = [];
 let Balance;
 //=localStorage.getItem("Balance")
 
+function majd(){
+    alert("hi")
+}
+
+
+
+function logout(){
+    send("logout")    
+}
+
+
+
 function send(action, extraData = {}) {
     return fetch("Maindata.php", {
         method: "POST",
@@ -321,6 +333,7 @@ function CreateWithdrawalBox(){
 
 
 }
+
 
 
 function RemoveRequest(){

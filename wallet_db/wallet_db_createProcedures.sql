@@ -1,180 +1,4 @@
--- Create the database
-CREATE DATABASE IF NOT EXISTS wallet_db;
-USE wallet_db;
-
--- =========================
--- Table: admins (Super Admins)
--- =========================
-CREATE TABLE IF NOT EXISTS admins (
-    admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
--- =========================
--- Table: managers
--- =========================
-CREATE TABLE IF NOT EXISTS managers (
-    manager_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    status ENUM("active","inactive")  DEFAULT "inactive",
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    admin_id INT NOT NULL,  
-    FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
-);
-
-
-
--- =========================
--- Table: users (Core Wallet Users)
--- =========================
-CREATE TABLE IF NOT EXISTS users (
-    user_id INT NOT NULL PRIMARY KEY,
-    FirstName VARCHAR(100) NOT NULL,
-    LastName VARCHAR(100) NOT NULL,
-    Email VARCHAR(150) NOT NULL UNIQUE,
-    Password VARCHAR(255) NOT NULL,
-    Nationality VARCHAR(255) NOT NULL,
-    Birthday DATE NOT NULL,
-    Transactions_count INT DEFAULT 0,
-    Phone VARCHAR(50) NOT NULL UNIQUE,
-    Income_source VARCHAR(100),
-    Type_Of_Account VARCHAR(255) NOT NULL,
-    Address VARCHAR(254) NOT NULL
-    status ENUM("active","deleted","suspended") DEFAULT "active";
-);
-
-
-
--- =========================
--- Table: wallets
--- Relationship: users (1) -- (1) wallets
--- =========================
-CREATE TABLE IF NOT EXISTS wallets (
-    wallet_id INT AUTO_INCREMENT PRIMARY KEY,
-    User_id INT NOT NULL UNIQUE,
-    balance DECIMAL(15,2) DEFAULT 0,
-    currency VARCHAR(10) DEFAULT 'USD',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (User_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
--- =========================
--- Table: transfers
--- Relationship: users (1) -- (N) transfers (as sender/receiver)
--- =========================
-CREATE TABLE transfers (
-    transfer_id INT NOT NULL PRIMARY KEY,
-    sender_id INT NOT NULL,
-    receiver_id INT NOT NULL,
-    amount DECIMAL(15,2) NOT NULL,
-    
-    Operation ENUM("Cash-Send","Cash-Out","Deposit","undefined") NOT NULL DEFAULT "undefined",
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES users(user_id),
-    FOREIGN KEY (receiver_id) REFERENCES users(user_id)
-);
-
--- =========================
--- Table: deposits (User requests to add funds)
--- Relationship: users (1) -- (N) deposits
--- =========================
-CREATE TABLE deposits (
-    deposit_id INT AUTO_INCREMENT PRIMARY KEY,
-    User_id INT NOT NULL,
-    manager_id INT,
-    amount DECIMAL(15,2) NOT NULL,
-    description VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (User_id) REFERENCES users(user_id),
-    FOREIGN KEY (manager_id) REFERENCES managers(manager_id)
-);
--- =========================
--- Table: withdrawals (User requests to pull funds)
--- Relationship: users (1) -- (N) withdrawals
--- =========================
-CREATE TABLE withdrawals (
-    withdrawal_id INT AUTO_INCREMENT PRIMARY KEY,
-    User_id INT NOT NULL,
-    amount DECIMAL(15,2) NOT NULL,
-    manager_id INT NULL,
-    description VARCHAR(255),
-    status ENUM('pending','handled') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (User_id) REFERENCES users(user_id),
-    FOREIGN KEY (manager_id) REFERENCES managers(manager_id)
-);
-----------------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
-
-CREATE FUNCTION CheckUserEmailExists(email VARCHAR(150))
-RETURNS BOOLEAN
-DETERMINISTIC
-BEGIN
-    DECLARE existsFlag BOOLEAN;
-
-    SELECT (COUNT(*) > 0) INTO existsFlag
-    FROM users
-    WHERE Email = email ;
-
-    RETURN existsFlag;
-END $$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE FUNCTION CheckUserIdExists(user_ID VARCHAR(150))
-RETURNS BOOLEAN
-DETERMINISTIC
-BEGIN
-    DECLARE existsFlag BOOLEAN;
-
-    SELECT (COUNT(*) > 0) INTO existsFlag
-    FROM users
-    WHERE user_id = user_ID;
-
-    RETURN existsFlag;
-END $$
-
-DELIMITER ;
-
-
-
-DELIMITER$$
-
-CREATE FUNCTION GetPassword(user_Email VARCHAR(150))
-RETURNS VARCHAR(255)
-DETERMINISTIC
-BEGIN
-    DECLARE pass VARCHAR(255);
-
-    SELECT password INTO pass
-    FROM users
-    WHERE Email=user_Email;
-
-    RETURN pass;
-END $$
-
-DELIMITER ;
-
-
-
-
-
-
-
-
------------------------------------------------------------------------------------------------------------------
-DELIMITER $$
-
 CREATE PROCEDURE InsertNewUser(
     IN p_user_id INT,
     IN p_FirstName VARCHAR(100),
@@ -189,25 +13,20 @@ CREATE PROCEDURE InsertNewUser(
     IN p_Address VARCHAR(254)
 )
 BEGIN
-    INSERT INTO users(user_id, FirstName, LastName, Email, Password, Nationality, Birthday, Phone, Income_source, Type_Of_Account, Address)
-    VALUES (p_user_id, p_FirstName, p_LastName, p_Email, p_Password, p_Nationality, p_Birthday, p_Phone, p_Income_source, p_Type_Of_Account, p_Address);
+    START TRANSACTION;
+        INSERT INTO users(user_id, FirstName, LastName, Email, Password, Nationality, Birthday, Phone, Income_source, Type_Of_Account, Address)
+        VALUES (p_user_id, p_FirstName, p_LastName, p_Email, p_Password, p_Nationality, p_Birthday, p_Phone, p_Income_source, p_Type_Of_Account, p_Address);
 
-    INSERT INTO wallets(User_id)
-    VALUES (p_user_id);
+        INSERT INTO wallets(User_id)
+        VALUES (p_user_id);
+    commit;
 END $$
 
 DELIMITER ;
 
-
-
--- =====================================================
--- PROCEDURE: transfer_money
--- Description: Transfers money between two users instantly.
--- Inputs: sender_user, receiver_user, amount, description
--- =====================================================
+-- transfer money
 
 DELIMITER $$
---not complete until the database is ready
 
 CREATE PROCEDURE money_transfer(
     IN transfer_code INT,
@@ -260,11 +79,9 @@ BEGIN
 
 END$$
 
-DELIMITER 
+DELIMITER ;
 
-
-
-DELIMITER $$
+-- =============================================================================================================== -- 
 
 DELIMITER $$
 
@@ -306,25 +123,7 @@ END$$
 
 DELIMITER ;
 
--- DELIMITER $$
-
--- CREATE PROCEDURE DeleteUserAccount(
---     IN p_user_id INT
--- )
--- BEGIN
---     START TRANSACTION;
-
-
---     DELETE FROM wallets
---     WHERE User_id = p_user_id;
-
---     DELETE FROM users
---     WHERE user_id = p_user_id;
-
---     COMMIT;
--- END $$
-
--- DELIMITER ;
+-- ================================================================================================================ --
 
 
 DELIMITER $$
@@ -359,31 +158,27 @@ BEGIN
 END$$
 
 DELIMITER ;
---=======================================================================================--
+
+-- ====================================================================================================
+
+
 
 DELIMITER $$
 
 CREATE PROCEDURE GetUserTransactions(IN p_user_id INT)
-BEGIN 
-        t.transfer_id,
-        t.sender_id,
-        s.FirstName AS sender_name,
-        t.receiver_id,
-        r.FirstName AS receiver_name,
-        t.amount,
-        t.Operation,
-        t.created_at
-    FROM transfers t
-    JOIN users s ON t.sender_id = s.user_id
-    JOIN users r ON t.receiver_id = r.user_id
-    WHERE (t.sender_id = p_user_id OR t.receiver_id = p_user_id) AND t.created_at >= CURDATE() - INTERVAL 30 DAY
-    ORDER BY t.created_at DESC;
+BEGIN
+    SELECT *
+    FROM v_user_transactions   -- using view
+    WHERE (sender_id = p_user_id OR receiver_id = p_user_id)
+      AND created_at >= CURDATE() - INTERVAL 30 DAY
+    ORDER BY created_at DESC;
 END $$
 
 DELIMITER ;
 
---===============================================================================--
 
+
+-- ===================================================================
 
 DELIMITER $$
 
@@ -435,13 +230,12 @@ BEGIN
         SET flag = 0;    -- no action allowed
     END IF;
 
-END$$
+END$$ 
 
 DELIMITER ;
 
-
-
---===========================================================================--
+-- ====================================================================================================
+DELIMITER $$
 CREATE PROCEDURE RemoveRequest(
     IN p_user_id INT,
     OUT flag BOOLEAN
@@ -478,48 +272,28 @@ BEGIN
 END$$
 
 DELIMITER ;
---===================================================================================--
+
+-- ================================================================================================================================
 DELIMITER $$
+
 CREATE PROCEDURE getPendingWithdrawals()
-BEGIN 
-    SELECT 
-        w.withdrawal_id,
-        w.user_id,
-        CONCAT(u.FirstName, ' ', u.LastName) AS name,
-        w.amount,
-        w.description,
-        w.created_at
-    FROM withdrawals w
-    JOIN users u ON w.user_id= u.user_id
-    WHERE w.status = 'pending';
+BEGIN
+    SELECT *
+    FROM v_pending_withdrawals; -- EDITED
 END$$
 
 DELIMITER ;
-
-
-
---=======================================================================================--
+-- ======================================================================================
 DELIMITER $$
 
-
-CREATE PROCEDURE getUserBasicInfo(
-    IN p_user_id INT
-)
+CREATE PROCEDURE getManagers()
 BEGIN
-    SELECT 
-        u.user_id,
-        CONCAT(u.FirstName, ' ',u.LastName) AS name,
-        u.Email,
-        w.balance,
-        u.status
-
-    FROM users u
-    JOIN wallets w ON u.user_id= w.user_id
-    WHERE u.user_id = p_user_id AND u.status!="deleted";
+    SELECT *
+    FROM v_manager_performance; -- EDITED
 END$$
 
 DELIMITER ;
---=======================================================================================--
+-- ========================================================================================
 DELIMITER $$
 
 CREATE PROCEDURE AddBalanceToWallet(
@@ -543,9 +317,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
---====================================================================================--
-
+-- ===============================================================================================
 DELIMITER $$
 
 CREATE PROCEDURE GetUserTransferStats(
@@ -565,8 +337,8 @@ BEGIN
 END $$
 
 DELIMITER ;
---========================================================================
 
+-- ===============================================================================================
 DELIMITER $$
 
 CREATE PROCEDURE GetInteractedUsers(
@@ -588,19 +360,15 @@ BEGIN
         SELECT sender_id AS other_user_id, created_at
         FROM transfers
         WHERE receiver_id = p_user_id
-    ) t
-    JOIN users u ON u.user_id = t.other_user_id
+    ) t,
+    users u                      -- 🔴 
+    WHERE u.user_id = t.other_user_id   -- 🔴 
     GROUP BY u.user_id, u.FirstName, u.LastName, u.Email
     ORDER BY first_interaction ASC;
 END $$
 
 DELIMITER ;
-
-
-
---=========================================================================--
-
-
+-- =======================================================================================================
 
 DELIMITER $$
 
@@ -627,15 +395,9 @@ END$$
 
 DELIMITER ;
 
+-- ====================================================================================================
 
-
-
---==========================================================================================majd
-
-
-
-
-
+DELIMITER $$
 
 CREATE PROCEDURE handleRequests(
     IN p_manager_id INT,
@@ -668,9 +430,9 @@ END $$
 
 DELIMITER ;
 
+-- ===========================================================================================================
 
 
---=======================================================================================--
 DELIMITER $$
 
 CREATE PROCEDURE addFunds(
@@ -720,8 +482,8 @@ END$$
 
 DELIMITER ;
 
+-- =======================================================================================================
 
---=========================================================================================--
 DELIMITER $$
 CREATE PROCEDURE globalBalance(
     OUT p_balance DECIMAL(15,2)
@@ -732,20 +494,22 @@ BEGIN
 END$$
 
 DELIMITER ;
-
---=========================================================================================--
+-- ===========================================================================================================
 DELIMITER $$
 CREATE PROCEDURE totalUsers(
     OUT p_usersTotal INT
 )
 BEGIN
     SELECT COUNT(*) INTO p_usersTotal
-    FROM users;
+    FROM users
     WHERE status!="deleted";
 END$$
 
 DELIMITER ;
---=========================================================================================--
+
+-- =================================================================================================================
+
+-- ============================================================================================================================
 DELIMITER $$
 CREATE PROCEDURE totalWithdrawals(
     OUT p_withdrawalsTotal INT
@@ -757,37 +521,27 @@ BEGIN
 END$$
 
 DELIMITER ;
---=========================================================================================--
-DELIMITER $$
-CREATE PROCEDURE totalWithdrawals(
-    OUT p_withdrawalsTotal INT
-)
-BEGIN
-    SELECT COUNT(*) INTO p_withdrawalsTotal
-    FROM withdrawals 
-    WHERE status = 'pending';
-END$$
+-- ===============================================================================================================================
 
-DELIMITER ;
---=========================================================================================--
-DELIMITER $$
-CREATE PROCEDURE getManagers(
-)
-BEGIN
-    SELECT 
-    m.manager_id, 
-    m.username, 
-    m.email, 
-    m.status,
-    m.created_at,
-    COUNT(w.withdrawal_id) AS handled_count
-FROM managers m
-LEFT JOIN withdrawals w ON m.manager_id = w.manager_id AND w.status = 'handled'
-GROUP BY m.manager_id;
-END$$
+-- DELIMITER $$
+-- CREATE PROCEDURE getManagers(
+-- )
+-- BEGIN
+--     SELECT 
+--     m.manager_id, 
+--     m.username, 
+--     m.email, 
+--     m.status,
+--     m.created_at,
+--     COUNT(w.withdrawal_id) AS handled_count
+-- FROM managers m
+-- LEFT JOIN withdrawals w ON m.manager_id = w.manager_id AND w.status = 'handled'
+-- GROUP BY m.manager_id;
+-- END$$
 
-DELIMITER ;
---=========================================================================================--
+-- DELIMITER ;
+-- ===============================================================================================
+
 DELIMITER $$
 CREATE PROCEDURE addNewManager(
     IN p_user_name VARCHAR(50),
@@ -801,8 +555,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
---=========================================================================================--
+-- ==============================================================================================
 DELIMITER $$
 CREATE PROCEDURE invokeManager(
     IN p_manager_id INT
@@ -827,3 +580,17 @@ BEGIN
 END$$
 
 DELIMITER ;
+-- ====================================================================================================
+DELIMITER $$
+
+CREATE PROCEDURE getUserBasicInfo(IN p_user_id INT)
+BEGIN
+    SELECT *
+    FROM v_user_basic_info   -- EDITED
+    WHERE user_id = p_user_id;
+END$$
+
+DELIMITER ;
+
+
+

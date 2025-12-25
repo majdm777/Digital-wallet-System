@@ -100,7 +100,7 @@ if (empty($_SESSION['signup_verified']) || $_SESSION['signup_verified'] !== true
 
         </form>
         <div class="row_inputs">    
-                <button class="Next_button"> <a style="text-decoration: none; color: black; font-size: 100%;" href="SIGNUP.html">Return</a></button>
+                <button class="Next_button"> <a style="text-decoration: none; color: black; font-size: 100%;" href="SIGNUP-1.php">Return</a></button>
                 <button class="Next_button" id="Next_button" onclick="LastPage()">Next</button>
                 
         </div>

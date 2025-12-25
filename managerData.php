@@ -1,5 +1,17 @@
 <?php
-$managerId=1;
+session_start();
+
+
+if(!isset($_SESSION["signup_email"]) || empty($_SESSION['signup_email'])){
+            $_SESSION['error'] = "an error happened while signing you in, please login again";
+            header("Location: index.php");
+            exit();
+}
+$managerId=$_SESSION["managerId"];
+$managerEmail=$_SESSION['managerEmail'];
+$managerusername=$_SESSION['managerUsername'];
+
+
 
 function generateNumericTransactionId() {
     // Generates a random number between 10^9 and (10^10)-1
@@ -14,7 +26,7 @@ header('Content-Type: application/json');
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    $db = new mysqli("localhost", "root", "NewPassword123!", "wallet_db");
+    $db = new mysqli("localhost", "root", "", "wallet_db");
     if($_SERVER['REQUEST_METHOD']==='POST'){
             $data = json_decode(file_get_contents("php://input"), true);
             $action = $data['action'] ?? null;

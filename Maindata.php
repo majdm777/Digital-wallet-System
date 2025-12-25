@@ -2,8 +2,9 @@
 session_start();
 
 if (!isset($_SESSION["signup_email"]) || empty($_SESSION['signup_email'])) {
-    //handle erro
-    //r;
+            $_SESSION['error'] = "an error happened while signing you in, please login again";
+            header("Location: index.php");
+            exit();
 }
 $userEmail = $_SESSION["signup_email"];
 $userId = $_SESSION['userID'];
@@ -295,6 +296,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } 
         exit;       
 
+    }
+
+    if($action === "logout"){
+        session_regenerate_id(true);
+        header("Location: index.php");
+        exit;
     }
 
 }

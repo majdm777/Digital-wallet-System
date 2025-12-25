@@ -26,7 +26,7 @@ if (isset($_POST['LOGIN'])) {
     if (str_ends_with(strtolower($email), '@wallet.com')) {
 
         $stmt = $db->prepare(
-            "SELECT password FROM managers WHERE email = ?"
+            "SELECT password , manager_id , username FROM managers WHERE email = ?"
         );
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -38,12 +38,15 @@ if (isset($_POST['LOGIN'])) {
             exit();
         }
 
-        $stmt->bind_result($dbPassword);
+        $stmt->bind_result($dbPassword,$ID,$username);
         $stmt->fetch();
+        
 
-        if ($password === $dbPassword) { // use password_verify if hashed
+        if (password_verify($password, $dbPassword)) { // use password_verify if hashed
             session_regenerate_id(true);
-            $_SESSION['manager'] = $email;
+            $_SESSION['managerEmail'] = $email;
+            $_SESSION["managerId"] = $ID;
+            $_SESSION["managerUsername"] = $username;
             header("Location: manager.html");
             exit();
         } else {
