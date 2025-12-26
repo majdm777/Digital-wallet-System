@@ -2,8 +2,8 @@
 session_start();
 
 
-if(!isset($_SESSION["signup_email"]) || empty($_SESSION['signup_email'])){
-            $_SESSION['error'] = "an error happened while signing you in, please login again";
+if(!isset($_SESSION["managerId"]) || empty($_SESSION['managerId'])){
+            $_SESSION['error'] = "Manager session expired, please login again";
             header("Location: index.php");
             exit();
 }

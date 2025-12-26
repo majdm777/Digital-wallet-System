@@ -228,36 +228,36 @@ function reloadData() {
 
 
 
-function deleteUser(){
-  let userId = parseInt(document.getElementById("deleteUserId").value) ;
-  let reason =document.getElementById("deleteReason").value;
-  if(!reason){
-    alert("Please provide a reason for deletion")
-    return
-  }
+// function deleteUser(){
+//   let userId = parseInt(document.getElementById("deleteUserId").value) ;
+//   let reason =document.getElementById("deleteReason").value;
+//   if(!reason){
+//     alert("Please provide a reason for deletion")
+//     return
+//   }
 
-  send("deleteUser",{userId}).then(data =>{
-    if(!data.success){
-      alert(data.comment)
-      document.getElementById("deleteReason").value =""
-      cancel();
-      return
-    }
-    alert(data.comment);
-    cancel();
-    document.getElementById("displayUserId").innerText = "";
-    document.getElementById("displayUserName").innerText = "";
-    document.getElementById("displayEmail").innerText = "";
-    document.getElementById("displayUserBalance").innerText = "";
-    //document.getElementById("deleteReason").value ="";
-    // Hide user actions
-    hideUserActions();
-  }).catch(err => {
-    console.error(err);
-    alert("An error occurred while deleting the user.");
-  });
+//   send("deleteUser",{userId}).then(data =>{
+//     if(!data.success){
+//       alert(data.comment)
+//       document.getElementById("deleteReason").value =""
+//       cancel();
+//       return
+//     }
+//     alert(data.comment);
+//     cancel();
+//     document.getElementById("displayUserId").innerText = "";
+//     document.getElementById("displayUserName").innerText = "";
+//     document.getElementById("displayEmail").innerText = "";
+//     document.getElementById("displayUserBalance").innerText = "";
+//     //document.getElementById("deleteReason").value ="";
+//     // Hide user actions
+//     hideUserActions();
+//   }).catch(err => {
+//     console.error(err);
+//     alert("An error occurred while deleting the user.");
+//   });
 
-  }
+//   }
 
 
 function suspendUser() {
