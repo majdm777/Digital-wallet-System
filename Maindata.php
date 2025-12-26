@@ -299,8 +299,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if($action === "logout"){
-        session_regenerate_id(true);
-        header("Location: index.php");
+
+        $_SESSION = [];
+        session_destroy();
+
+        echo json_encode(["logout" => true]);
         exit;
     }
 

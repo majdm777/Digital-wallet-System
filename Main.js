@@ -11,11 +11,6 @@ function majd(){
 
 
 
-function logout(){
-    send("logout")    
-}
-
-
 
 function send(action, extraData = {}) {
     return fetch("Maindata.php", {
@@ -25,6 +20,24 @@ function send(action, extraData = {}) {
     })
     .then(res => res.json());
 }
+
+
+
+
+
+function logout(){
+    // send("logout").then(data =>{
+    //     console.log("log out")
+    // })
+    send("logout").then(data =>{
+        if(data.logout){
+        window.location.href= "index.php";}
+        return;
+    })
+    window.location.href= "index.php";
+
+}
+
 function fillinfo(){// review after finishing the database
     send("getuserinfo").then(Data =>{
 
